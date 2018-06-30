@@ -16,3 +16,5 @@ Repo for archiving sessions of: <https://www.meetup.com/Software-Craftsmanship-S
 
 2018-06-23: bowling game, scala
 
+2018-06-30: bowling game, python, scala
+
