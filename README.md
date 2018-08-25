@@ -19,3 +19,5 @@ Repo for archiving sessions of: <https://www.meetup.com/Software-Craftsmanship-S
 2018-06-30: bowling game, python, scala
 
 2018-08-18: Luhn algo, go
+
+2018-08-18: [Tennis-Refactoring-Kata](https://github.com/emilybache/Tennis-Refactoring-Kata), python
