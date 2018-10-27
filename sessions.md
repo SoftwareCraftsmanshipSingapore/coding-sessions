@@ -21,3 +21,5 @@
 2018-08-18: [Tennis-Refactoring-Kata](https://github.com/emilybache/Tennis-Refactoring-Kata), python
 
 2018-09-22: [Data Munging](http://codekata.com/kata/kata04-data-munging/), python, shell
+
+2018-10-27: Word Frequency in Scala based on [Exercises in Programming Style](https://www.amazon.com/Exercises-Programming-Style-Cristina-Videira/dp/1482227371)
