@@ -23,3 +23,5 @@
 2018-09-22: [Data Munging](http://codekata.com/kata/kata04-data-munging/), python, shell
 
 2018-10-27: Word Frequency in Scala based on [Exercises in Programming Style](https://www.amazon.com/Exercises-Programming-Style-Cristina-Videira/dp/1482227371)
+
+2018-10-03: Searching for the saddle points in a two dimensional array; written in Scala. The kata can be found in cyber-dojo.org. 
