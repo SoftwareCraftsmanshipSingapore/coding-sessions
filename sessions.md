@@ -26,4 +26,7 @@
 
 2018-10-03: Searching for the saddle points in a two dimensional array; written in Scala. The kata can be found in cyber-dojo.org.
 
-2018-10-27: Two queens problem, scala.
+2018-11-10: Two queens problem, scala.
+
+2018-11-17: Square code secret message encoding, [easy problem 4](http://users.csc.calpoly.edu/~jdalbey/103/Projects/ProgrammingPractice.html), python.
+
