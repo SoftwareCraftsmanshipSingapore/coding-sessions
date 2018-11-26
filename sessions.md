@@ -30,3 +30,5 @@
 
 2018-11-17: Square code secret message encoding, [easy problem 4](http://users.csc.calpoly.edu/~jdalbey/103/Projects/ProgrammingPractice.html), python.
 
+2018-11-24: Game of life, scala.
+
