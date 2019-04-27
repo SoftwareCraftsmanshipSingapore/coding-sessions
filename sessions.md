@@ -33,3 +33,6 @@
 2018-11-24: Game of life, scala.
 
 2019-02-02: RomanNumerals, java.
+
+2019-04-27: Auction, scala
+
