@@ -38,3 +38,5 @@
 
 2019-05-11: Minesweeper, scala
 
+2019-06-8: Coffee shop, scala
+
