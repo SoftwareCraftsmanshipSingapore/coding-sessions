@@ -2,7 +2,7 @@ package example
 
 import example.CoffeeShop.{Money, OrderNumber, Products}
 import example.Command.{AcceptPayment, CollectOrder, PlaceOrder}
-import example.Event.{OrderCollected, OrderPlaced, OrderRejected, PaymentAccepted}
+import example.Event.{OrderCollectionRejected, OrderCollected, OrderPlaced, OrderPlacementRejected, PaymentAccepted, OrderPaymentRejected}
 
 sealed trait Command
 
@@ -18,7 +18,9 @@ object Event {
   case class OrderPlaced(order: Order) extends Event
   case class PaymentAccepted(receipt: Receipt) extends Event
   case class OrderCollected(products: Seq[Product]) extends Event
-  case class OrderRejected(msg: String) extends Event
+  case class OrderPlacementRejected(msg: String) extends Event
+  case class OrderPaymentRejected(msg: String) extends Event
+  case class OrderCollectionRejected(msg: String) extends Event
 }
 
 
@@ -35,10 +37,6 @@ case class Receipt(orderNumber: OrderNumber)
 
 case class CoffeeShop(orders: Seq[Order], receipts: Seq[Receipt], inventory: Map[Product, Int]){
 
-  def processCommand(c:Command): (CoffeeShop, Seq[Event]) = {
-    val events = receive(c)
-    (update(events), events)
-  }
   //Seq cause could create multiple changes
   def receive(command: Command): Seq[Event] = command match{
     case PlaceOrder(products) =>
@@ -46,40 +44,28 @@ case class CoffeeShop(orders: Seq[Order], receipts: Seq[Receipt], inventory: Map
         val order = Order(1, products: _*)
         Seq(OrderPlaced(order))
       }else{
-        Seq(OrderRejected("No Stock!"))
+        Seq(OrderPlacementRejected("No Stock!"))
       }
 
     case AcceptPayment(orderNumber, money) =>
-     Seq(PaymentAccepted(Receipt(orderNumber)))
+     Seq(OrderPaymentRejected(s"Order $orderNumber not found!"))
 
     case CollectOrder(orderNumber) =>
       val collectedProducts: Seq[Product] = orders.filter(_.number == orderNumber).flatMap(_.product)
-      Seq(OrderCollected(collectedProducts))
+      Seq(collectedProducts).map {
+        case Nil => OrderCollectionRejected(s"Order $orderNumber not found!")
+        case ps  => OrderCollected(ps)
+      }
   }
 
-  def update(events: Seq[Event]): CoffeeShop =
-    events.foldLeft(this) {
-      case (cs, OrderPlaced(order)) =>
-        cs.copy(orders = orders :+ order)
-      case (cs, PaymentAccepted(receipt)) =>
-        cs.copy(receipts = receipts :+ receipt)
-      case (cs, OrderCollected(products)) =>
-        cs.copy(inventory = inventory -- products)
-      case (cs, OrderRejected(msg)) =>
-        return this
-    }
+  def updateAll(events: Seq[Event]): CoffeeShop =
+    events.foldLeft(this)(update)
 
-  def order(product: Product*): CoffeeShop = {
-    val order = Order(1, product:_*)
-    copy(orders = orders :+ order)
-  }
-
-  def pay(orderNumber: OrderNumber, money: Money): CoffeeShop =
-    copy(receipts = receipts :+ Receipt(orderNumber))
-
-  def collect(orderNumber: OrderNumber): CoffeeShop = {
-    val collectedProducts = orders.filter(_.number == orderNumber).flatMap(_.product)
-    copy(inventory = inventory -- collectedProducts)
+  private def update(cs:CoffeeShop, e : Event): CoffeeShop = e match {
+    case OrderPlaced(order)                                                               => cs.copy(orders = orders :+ order)
+    case PaymentAccepted(receipt)                                                         => cs.copy(receipts = receipts :+ receipt)
+    case OrderCollected(products)                                                         => cs.copy(inventory = inventory -- products)
+    case _: OrderPlacementRejected | _: OrderPaymentRejected | _: OrderCollectionRejected => this
   }
 
   private def inventoryAvailable(products: Seq[Product]): Boolean =
@@ -93,5 +79,5 @@ object CoffeeShop{
 
   def empty = CoffeeShop(orders = Seq.empty, receipts = Seq.empty, inventory = Map.empty)
 
-  def initialise (events: Seq[Event]): CoffeeShop = CoffeeShop.empty.update(events)
+  def initialise (events: Seq[Event]): CoffeeShop = CoffeeShop.empty.updateAll(events)
 }
