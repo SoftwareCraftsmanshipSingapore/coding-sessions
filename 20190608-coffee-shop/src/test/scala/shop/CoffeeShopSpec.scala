@@ -22,12 +22,12 @@ class CoffeeShopSpec extends FlatSpec with Matchers with TestData with TableDriv
 
   "A new CoffeeShop" should "reject an order" in {
     Table(
-      ("when", "then")
-      , (placeOrder, orderPlacementRejected)
+      ("command"      , "event")
+      , (placeOrder   , orderPlacementRejected)
       , (acceptPayment, orderPaymentRejected)
-      , (collectOrder, orderCollectRejected)
+      , (collectOrder , orderCollectRejected)
     )forEvery {
-      (w, t) => givenNew when w dzen t
+      (command, events) => givenNew when command dzen events
     }
   }
 
@@ -36,8 +36,6 @@ class CoffeeShopSpec extends FlatSpec with Matchers with TestData with TableDriv
 object CoffeeShopSpec {
 
   import State._
-
-  val tester: CoffeeShopTester[New] = CoffeeShopTester[New]()
 
   sealed trait State
   object State {
