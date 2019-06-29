@@ -3,4 +3,4 @@
 *.ipr
 *.iws
 .idea
-target/
+target
