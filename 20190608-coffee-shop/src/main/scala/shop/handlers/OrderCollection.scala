@@ -19,7 +19,7 @@ trait OrderCollection extends CS {
       case None        => OrderCollectionRejected(s"Order $orderNumber not found!")
     }
 
-  override def update: Update = {
+  override def update: Update = super.update orElse {
     case OrderCollected(products)   => copy(inventory = inventory -- products)
     case _: OrderCollectionRejected => this
   }
