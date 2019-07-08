@@ -6,7 +6,7 @@ object FGC extends App {
   private val start: Sides = Sides(fullSide , emptySide)
   private val goal : Sides = Sides(emptySide, fullSide )
 
-  private def solve(currentSides: Sides, branch: List[Sides] = Nil): History = {
+  private def solve(currentSides: Sides, branch: List[Sides]): History = {
     val newSides = currentSides match {
       case s if s.x(m) => s.move1fromXtoY
       case s if s.y(m) => s.move1fromYtoX

@@ -1,13 +1,12 @@
 package puzzles.fgc
 
 object BFGC extends App {
-
   private val fullSide  = Set(m, b, f, g, c)
   private val emptySide = Set.empty[Char]
   private val start: Sides = Sides(fullSide , emptySide)
   private val goal : Sides = Sides(emptySide, fullSide )
 
-  private def solve(currentSides: Sides, branch: List[Sides] = Nil): History = {
+  private def solve(currentSides: Sides, branch: List[Sides]): History = {
     val newSides = currentSides match {
       case s if s.x(m) => s.move2fromXtoY
       case s if s.y(m) => s.move2fromYtoX
