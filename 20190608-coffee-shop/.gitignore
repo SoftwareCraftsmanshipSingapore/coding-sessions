@@ -1,0 +1,7 @@
+*.log
+.DS_Store
+*.ipr
+*.iws
+.idea
+target
+project
