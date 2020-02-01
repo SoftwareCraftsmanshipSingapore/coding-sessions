@@ -38,5 +38,6 @@
 
 2019-05-11: Minesweeper, scala
 
-2019-06-8: Coffee shop, scala
+2019-06-08: Coffee shop, scala
 
+2020-02-01: Pocker hands, python
