@@ -26,13 +26,13 @@
 
 2018-10-03: Searching for the saddle points in a two dimensional array; written in Scala. The kata can be found in cyber-dojo.org.
 
-2018-11-10: Two queens problem, scala.
+2018-11-10: Two queens problem, scala
 
-2018-11-17: Square code secret message encoding, [easy problem 4](http://users.csc.calpoly.edu/~jdalbey/103/Projects/ProgrammingPractice.html), python.
+2018-11-17: Square code secret message encoding, [easy problem 4](http://users.csc.calpoly.edu/~jdalbey/103/Projects/ProgrammingPractice.html), python
 
-2018-11-24: Game of life, scala.
+2018-11-24: Game of life, scala
 
-2019-02-02: RomanNumerals, java.
+2019-02-02: RomanNumerals, java
 
 2019-04-27: Auction, scala
 
@@ -41,3 +41,5 @@
 2019-06-08: Coffee shop, scala
 
 2020-02-01: Pocker hands, python
+
+2020-03-14: [Mars rovers](https://code.google.com/archive/p/marsrovertechchallenge/), python
