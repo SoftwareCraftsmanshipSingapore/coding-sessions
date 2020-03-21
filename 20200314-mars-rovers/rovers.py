@@ -1,3 +1,5 @@
+from itertools import combinations
+
 class Rover:
     def __init__(self, pos):
         self.x, self.y, self.d = pos
@@ -37,5 +39,30 @@ class Rover:
     def noops(self):
         pass
 
-class System:
-    pass
+
+class Squadron:
+    def __init__(self, instructions):
+        self.instructions = instructions
+        self.rovers = []
+
+    def execute(self):
+        for instruct in self.instructions:
+            r = Rover(instruct['pos'])
+            r.execute(instruct['cmd'])
+            self.rovers.append(r)
+
+    def get_positions(self):
+        return [r.position() for r in self.rovers]
+
+
+class Station:
+    def parse(self, text):
+        return [{'pos': self.parse_position(p), 'cmd': c}
+            for p, c in self.group_by(2, text.strip().split('\n\n')[1:])]
+
+    def group_by(self, n, lst):
+        return list(zip(*[lst[i::n] for i in range(n)]))
+
+    def parse_position(self, txt):
+        p = txt.split(' ')
+        return (int(p[0]), int(p[1]), p[2])
