@@ -2,22 +2,29 @@ package rover
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
+import rover.Direction._
 
 class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with TableDrivenPropertyChecks{
 
-  "starting position of 1, 2" in {
+  "starting location (1, 2)" when {
     val testData = Table(
-      ("direction", "expected"),
-      ('N',  Position (1, 3)),
-      //('W',  Position (1, 3)),
-      ('S',  Position (1, 1))
-      //('E',  Position (1, 3)),
+      ("direction", "expected")
+      ,(N,  Location (1, 3))
+      ,(S,  Location (1, 1))
+      ,(E,  Location (2, 2))
+      ,(W,  Location (0, 2))
     )
     testData forEvery {
-      (direction, expectedPostition) =>
-        val rover = new Rover(Position(1, 2), direction)
-        rover.move()
-        rover.current shouldBe (expectedPostition, direction)
+      (direction, expectedLocation) =>
+        s"direction $direction and instructed to move" should {
+          s"end up at $expectedLocation" in {
+            val rover = new Rover(Location(1, 2), direction)
+            rover.move()
+            rover.position shouldBe (expectedLocation, direction)
+          }
+        }
+
     }
+
   }
 }
