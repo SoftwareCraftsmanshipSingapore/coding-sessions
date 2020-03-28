@@ -1,4 +1,5 @@
 .pytest_cache/
 .idea/
+.vscode/
 *.iml
 *.class
