@@ -27,11 +27,11 @@ object Squadron {
   private object Parser {
     case object New extends Parser {
       override def parse(line: String): Option[Parser] = Option(line) collect {
-        case locationR(x, y) => PlateauP()(Plateau(x, y))
+        case locationR(x, y) => JustPlateau()(Plateau(x, y))
       }
     }
 
-    case class PlateauP()(implicit val plateau: Plateau) extends Parser {
+    case class JustPlateau()(implicit val plateau: Plateau) extends Parser {
       override def parse(line: String): Option[Parser] = Option(line) collect {
         case roverR(x, y, d) => FirstRover(Rover(x, y, d))
       }
@@ -82,7 +82,7 @@ object Squadron {
     val lines = instructions.trim.split('\n').filter(_.nonEmpty).toList
     parse(New, lines) match {
       case New                 => sys.error("empty set of instructions")
-      case _:PlateauP          => sys.error("only plateau")
+      case _:JustPlateau       => sys.error("only plateau")
       case _:FirstRover        => sys.error("only one rover")
       case p:FirstCommand      => new Squadron(p.plateau, Seq(p.rover), Seq(p.command))
       case _:SecondRover       => sys.error("two rovers and missing 2nd rover commands")
