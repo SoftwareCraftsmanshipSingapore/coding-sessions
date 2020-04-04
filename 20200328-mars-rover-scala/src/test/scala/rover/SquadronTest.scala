@@ -19,7 +19,6 @@ class SquadronTest  extends org.scalatest.wordspec.AnyWordSpec with Matchers wit
   "a squadron" when {
     "receiving instructions" should {
       "parse them" in {
-        val squadron = new Squadron
         val instructions =
           """
             |5 5
@@ -39,7 +38,7 @@ class SquadronTest  extends org.scalatest.wordspec.AnyWordSpec with Matchers wit
             |
             |5 1 E
             |""".stripMargin
-        squadron.receive(instructions)
+        val squadron = Squadron(instructions)
         squadron.execute()
 
         squadron.plateau shouldBe Plateau(5, 5)
