@@ -19,7 +19,7 @@ object Squadron {
   type Commands = Seq[Command]
   private trait Parser {
     protected val locationR: Regex = """([0-9]+)\s+([0-9]+)""".r
-    protected val roverR   : Regex = """([0-9]+)\s+([0-9]+)\s([NSWE])""".r
+    protected val roverR   : Regex = """([0-9]+)\s+([0-9]+)\s+([NSWE])""".r
     protected val commandsR: Regex = """([LRF]+)""".r
 
     def parse(line: String): Option[Parser]
