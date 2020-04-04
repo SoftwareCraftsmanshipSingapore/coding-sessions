@@ -16,10 +16,10 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
     )
     testData forEvery {
       (direction, expectedLocation) =>
-        s"direction $direction and instructed to move" should {
+        s"direction $direction and instructed to go forward" should {
           s"end up at $expectedLocation" in {
             val rover = new Rover(Location(1, 2), direction)
-            rover.move()
+            rover.forward()
             rover.position shouldBe (expectedLocation, direction)
           }
         }
@@ -44,6 +44,16 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
             rover.position shouldBe (location, newDirection)
           }
         }
+    }
+  }
+
+  "a rover" when {
+    "receiving a sequence of command" should {
+      "moves to a new position" in {
+        val rover = new Rover(Location(1, 1), N)
+        rover.move("FLFR")
+        rover.position shouldBe (Location(0,2), N)
+      }
     }
   }
 }
