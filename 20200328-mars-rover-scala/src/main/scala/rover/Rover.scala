@@ -2,7 +2,7 @@ package rover
 
 import rover.Direction._
 
-class Rover(var location: Location, direction: Direction) {
+class Rover(var location: Location, var direction: Direction) {
   def move(): Unit = {
     location = direction match {
       case N => location.incY
@@ -10,6 +10,21 @@ class Rover(var location: Location, direction: Direction) {
       case E => location.incX
       case W => location.decX
     }
+  }
+
+  def left(turns: Int = 1): Unit = {
+    direction = direction match {
+      case N => W
+      case S => E
+      case E => N
+      case W => S
+    }
+  }
+
+  def right(): Unit = {
+    left()
+    left()
+    left()
   }
 
   def position: (Location, Direction) = (location, direction)

@@ -23,8 +23,27 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
             rover.position shouldBe (expectedLocation, direction)
           }
         }
-
     }
+  }
 
+  "starting at (1,2)" when {
+    val testData = Table(
+      ("direction", "new direction")
+      ,(N, W)
+      ,(S, E)
+      ,(E, N)
+      ,(W, S)
+    )
+    testData.forEvery{
+      (direction, newDirection) =>
+        s"pointing $direction instructed to turn Left" should {
+          s"point $newDirection" in {
+            val location = Location(1, 2)
+            val rover = new Rover(location, direction)
+            rover.left()
+            rover.position shouldBe (location, newDirection)
+          }
+        }
+    }
   }
 }
