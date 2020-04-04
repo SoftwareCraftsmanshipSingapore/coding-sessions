@@ -1,7 +1,8 @@
 package rover
 
+import org.scalatest.EitherValues
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.wordspec.AnyWordSpec
 
 //TODO: 1. Invalid instructions
 //      1.1  bad direction: X instead of N
@@ -14,15 +15,15 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 //TODO: 5. World exploration
 //      5.1 world setup
 //      5.2 rover cell content detection
-class SquadronTest  extends org.scalatest.wordspec.AnyWordSpec with Matchers with TableDrivenPropertyChecks {
+class SquadronTest  extends AnyWordSpec with Matchers with EitherValues {
 
-  "a squadron" when {
-    "receiving instructions" should {
-      "parse them" in {
+  "a squadron" should {
+    "parse the instructions" that {
+      "are well formed" in {
         val instructions =
           """
             |5 5
-            |
+            |d
             |1 2 N
             |
             |LFLFLFLFF
@@ -38,11 +39,26 @@ class SquadronTest  extends org.scalatest.wordspec.AnyWordSpec with Matchers wit
             |
             |5 1 E
             |""".stripMargin
-        val squadron = Squadron(instructions)
-        squadron.execute()
+        Squadron(instructions) match {
+          case Right(s) =>
+            s.execute()
 
-        squadron.plateau shouldBe Plateau(5, 5)
-        squadron.result shouldBe expectedOutput
+            s.plateau shouldBe Plateau(5, 5)
+            s.result shouldBe expectedOutput
+          case Left(error) =>
+            fail(s"failed to parse instructions: $error")
+        }
+      }
+    }
+    "fail to parse the instructions" that {
+      "are empty" in {
+        Squadron("") shouldBe Left("empty set of instructions")
+      }
+      "only contain the plateau size" in {
+        Squadron("5 5") shouldBe Left("only plateau")
+      }
+      "only contain the plateau size and garbage" in {
+        Squadron("5 5\ngarbage") shouldBe Left("only plateau")
       }
     }
   }
