@@ -6,7 +6,8 @@
 target
 
 dist/*
-target/
+target/*
+target/streams/*
 lib_managed/
 src_managed/
 project/boot/
