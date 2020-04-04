@@ -74,4 +74,5 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
         }
     }
   }
+
 }

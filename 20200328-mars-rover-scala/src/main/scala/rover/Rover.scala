@@ -51,6 +51,8 @@ class Rover(
   }
 
   def position: (Location, Direction) = (location, direction)
+
+  def positionString: String = s"${location.x} ${location.y} $direction"
 }
 
 case class Plateau(maxX: Int, maxY: Int)
@@ -69,4 +71,12 @@ object Direction {
   case object S extends Direction
   case object E extends Direction
   case object W extends Direction
+
+  def from(s: String): Direction =
+    s match {
+      case "N" => N
+      case "S" => S
+      case "E" => E
+      case "W" => W
+    }
 }
