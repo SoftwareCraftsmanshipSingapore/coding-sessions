@@ -6,6 +6,8 @@ import rover.Direction._
 
 class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with TableDrivenPropertyChecks{
 
+  private val plateau = Plateau(5, 5)
+
   "starting location (1, 2)" when {
     val testData = Table(
       ("direction", "expected")
@@ -18,9 +20,10 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
       (direction, expectedLocation) =>
         s"direction $direction and instructed to go forward" should {
           s"end up at $expectedLocation" in {
-            val rover = new Rover(Location(1, 2), direction)
+            val rover = new Rover(Location(1, 2), direction, plateau)
             rover.forward()
             rover.position shouldBe (expectedLocation, direction)
+            rover.lastMoveSuccess shouldBe true
           }
         }
     }
@@ -39,7 +42,7 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
         s"pointing $direction instructed to turn Left" should {
           s"point $newDirection" in {
             val location = Location(1, 2)
-            val rover = new Rover(location, direction)
+            val rover = new Rover(location, direction, plateau)
             rover.left()
             rover.position shouldBe (location, newDirection)
           }
@@ -50,10 +53,25 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
   "a rover" when {
     "receiving a sequence of command" should {
       "moves to a new position" in {
-        val rover = new Rover(Location(1, 1), N)
+        val rover = new Rover(Location(1, 1), N, plateau)
         rover.move("FLFR")
         rover.position shouldBe (Location(0,2), N)
       }
+    }
+  }
+
+  "a rover" when {
+    val directions = Table("direction", N, W, S, E)
+    directions.forEvery{
+      d =>
+        s"facing $d and instructed to move outside of the plateau" should {
+          "refuse the command and remain in the original position" in {
+            val rover = new Rover(Location(0, 0), d, Plateau(0, 0))
+            rover.forward()
+            rover.position shouldBe (Location(0, 0), d)
+            rover.lastMoveSuccess shouldBe false
+          }
+        }
     }
   }
 }

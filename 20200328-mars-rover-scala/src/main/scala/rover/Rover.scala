@@ -2,15 +2,32 @@ package rover
 
 import rover.Direction._
 
-class Rover(var location: Location, var direction: Direction) {
+class Rover(
+  var location: Location,
+  var direction: Direction,
+  val plateau: Plateau,
+  var lastMoveSuccess: Boolean = true
+) {
   def forward(): Unit = {
-    location = direction match {
+    if (isMoveValid(computeNewLocation)) {
+      lastMoveSuccess = true
+      location = computeNewLocation
+    }
+    else {
+      lastMoveSuccess = false
+    }
+  }
+
+  private def computeNewLocation =
+    direction match {
       case N => location.incY
       case S => location.decY
       case E => location.incX
       case W => location.decX
     }
-  }
+
+  private def isMoveValid(nl: Location): Boolean =
+    nl.x >= 0 && nl.y >= 0 && nl.x <= plateau.maxX && nl.y <= plateau.maxY
 
   def left(turns: Int = 1): Unit = {
     direction = direction match {
@@ -35,6 +52,8 @@ class Rover(var location: Location, var direction: Direction) {
 
   def position: (Location, Direction) = (location, direction)
 }
+
+case class Plateau(maxX: Int, maxY: Int)
 
 case class Location(x: Int, y: Int) {
   def incY: Location = copy(y = y + 1)
