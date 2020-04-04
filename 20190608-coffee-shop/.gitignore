@@ -4,7 +4,6 @@
 *.iws
 .idea
 target
-project
 
 dist/*
 target/
