@@ -3,11 +3,10 @@
 *.ipr
 *.iws
 .idea
-target
 
 dist/*
 target/*
-target/streams/*
+target/**/streams/*
 lib_managed/
 src_managed/
 project/boot/
