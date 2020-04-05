@@ -16,21 +16,29 @@ import org.scalatest.wordspec.AnyWordSpec
 //      5.1 world setup
 //      5.2 rover cell content detection
 class SquadronTest  extends AnyWordSpec with Matchers with EitherValues {
+  private val right = Symbol("right")
+  private val p   = "5 5"
+  private val r1  = "1 2 N"
+  private val r2c = "LFLFLFLFF"
+  private val r2  = "3 3 E"
+  private val r1c = "FFRFFRFRRF"
+  private val r3  = "0 0 N"
+  private val r3c = "LRLRLRLRLRFFF"
 
   "a squadron" should {
     "parse the instructions" that {
       "are well formed" in {
         val instructions =
-          """
-            |5 5
-            |d
-            |1 2 N
+         s"""
+            |$p
             |
-            |LFLFLFLFF
+            |$r1
             |
-            |3 3 E
+            |$r2c
             |
-            |FFRFFRFRRF
+            |$r2
+            |
+            |$r1c
             |""".stripMargin
 
         val expectedOutput =
@@ -49,16 +57,33 @@ class SquadronTest  extends AnyWordSpec with Matchers with EitherValues {
             fail(s"failed to parse instructions: $error")
         }
       }
+      "contain plateau, first rover and first command" in {
+        Squadron(s"$p\n$r1\n$r1c") shouldBe right
+        Squadron(s"$p\ngarbage\n$r1\n\n$r1c\ngarbage\\\nmore garbage") shouldBe right
+      }
+      "contain plateau two rovers and their commands" in {
+        Squadron(s"$p\n$r1\n$r1c\n$r2\n$r2c") shouldBe right
+      }
+      "contain plateau three rovers and their commands" in {
+        Squadron(s"$p\n$r1\n$r1c\n$r2\n$r2c\n$r3\n$r3c") shouldBe right
+      }
     }
     "fail to parse the instructions" that {
       "are empty" in {
         Squadron("") shouldBe Left("empty set of instructions")
       }
-      "only contain the plateau size" in {
-        Squadron("5 5") shouldBe Left("only plateau")
+      "contain the plateau size" in {
+        Squadron(s"$p") shouldBe Left("only plateau")
+        Squadron(s"$p\n\ngarbage") shouldBe Left("only plateau")
       }
-      "only contain the plateau size and garbage" in {
-        Squadron("5 5\ngarbage") shouldBe Left("only plateau")
+      "and first rover" in {
+        Squadron(s"$p\ngarbage\n$r1\ngarbage") shouldBe Left("only one rover")
+      }
+      "and first rover's commands and second rover" in {
+        Squadron(s"$p\ngarbage\n$r1\ngarbage\n$r1c\n$r2") shouldBe Left("two rovers and missing 2nd rover commands")
+      }
+      "and third rover" in {
+        Squadron(s"$p\n$r1\n$r1c\n$r2\n$r2c\n$r3\ngarbage\n") shouldBe Left("3 rovers and missing last rover commands")
       }
     }
   }
