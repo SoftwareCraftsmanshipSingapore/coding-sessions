@@ -1,15 +1,37 @@
 package rover
 
-class Rover(var position: Position, d: Char) {
-  def move(): Unit = {
-    position = if (d == 'S') position.decY else position.incY
+class Rover(
+  var location: Location,
+  var direction: Direction,
+  val plateau: Plateau,
+  var lastMoveSuccess: Boolean = true
+) {
+  def move(commands: String): Unit = commands.foreach {
+    case 'F' => forward()
+    case 'L' => left()
+    case 'R' => right()
   }
 
-  def current: (Position, Char) = (position, d)
+  def forward(): Unit = {
+    plateau.contains(location.move(direction)) match {
+      case Some(nl) =>
+        lastMoveSuccess = true
+        location = nl
+      case None     =>
+        lastMoveSuccess = false
+    }
+  }
+
+  def left(): Unit = direction = direction.left
+
+  def right(): Unit = direction = direction.right
+
+  def position: (Location, Direction) = (location, direction)
+
+  def positionString: String = s"${location.x} ${location.y} $direction"
 }
 
-
-case class Position(x: Int, y: Int) {
-  def incY: Position = copy(y = y + 1)
-  def decY: Position = copy(y = y - 1)
+object Rover {
+  def apply(x: String, y: String, d: String)(implicit p: Plateau): Rover =
+    new Rover(Location(x, y), Direction.from(d), p)
 }
