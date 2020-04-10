@@ -1,6 +1,6 @@
-package rover
+package marsrover
 
-import rover.Direction.{E, N, S, W}
+import marsrover.Direction.{E, N, S, W}
 
 case class Location(x: Int, y: Int) {
   def move(direction: Direction): Location =

@@ -1,4 +1,4 @@
-package rover
+package marsrover
 
 sealed abstract class Direction private (l: => Direction, r: => Direction) {
   def left: Direction = l
