@@ -1,9 +1,9 @@
-package rover
+package marsrover
 
 case class Plateau(maxX: Int, maxY: Int) {
-  def contains(location: Location): Option[Location] =
-    Option(location).filter {
-      case Location(x, y) =>
+  def contains(position: Position): Option[Position] =
+    Option(position).filter {
+      case Position(Location(x, y), _) =>
         x >= 0 && y >= 0 && x <= maxX && y <= maxY
     }
 }

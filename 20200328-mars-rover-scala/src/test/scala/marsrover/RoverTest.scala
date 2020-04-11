@@ -1,8 +1,8 @@
-package rover
+package marsrover
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
-import rover.Direction._
+import marsrover.Direction._
 
 class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with TableDrivenPropertyChecks{
 
@@ -20,9 +20,9 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
       (direction, expectedLocation) =>
         s"direction $direction and instructed to go forward" should {
           s"end up at $expectedLocation" in {
-            val rover = new Rover(Location(1, 2), direction, plateau)
+            val rover = Rover(1, 2, direction, plateau)
             rover.forward()
-            rover.position shouldBe (expectedLocation, direction)
+            rover.position shouldBe Position(expectedLocation, direction)
             rover.lastMoveSuccess shouldBe true
           }
         }
@@ -42,9 +42,9 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
         s"pointing $direction instructed to turn Left" should {
           s"point $newDirection" in {
             val location = Location(1, 2)
-            val rover = new Rover(location, direction, plateau)
+            val rover = Rover(1, 2, direction, plateau)
             rover.left()
-            rover.position shouldBe (location, newDirection)
+            rover.position shouldBe Position(location, newDirection)
           }
         }
     }
@@ -53,9 +53,9 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
   "a rover" when {
     "receiving a sequence of command" should {
       "moves to a new position" in {
-        val rover = new Rover(Location(1, 1), N, plateau)
+        val rover = Rover(1, 1, N, plateau)
         rover.move("FLFR")
-        rover.position shouldBe (Location(0,2), N)
+        rover.position shouldBe Position(Location(0,2), N)
       }
     }
   }
@@ -66,9 +66,9 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
       d =>
         s"facing $d and instructed to move outside of the plateau" should {
           "refuse the command and remain in the original position" in {
-            val rover = new Rover(Location(0, 0), d, Plateau(0, 0))
+            val rover = Rover(0, 0, d, Plateau(0, 0))
             rover.forward()
-            rover.position shouldBe (Location(0, 0), d)
+            rover.position shouldBe Position(Location(0, 0), d)
             rover.lastMoveSuccess shouldBe false
           }
         }
