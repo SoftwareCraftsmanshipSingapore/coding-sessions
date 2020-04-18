@@ -30,15 +30,15 @@ class SquadronTest  extends AnyWordSpec with Matchers with EitherValues {
       "are well formed" in {
         val instructions =
          s"""
-            |$p
+            |5 5
             |
-            |$r1
+            |1 2 N
             |
-            |$r2c
+            |LFLFLFLFF
             |
-            |$r2
+            |3 3 E
             |
-            |$r1c
+            |FFRFFRFRRF
             |""".stripMargin
 
         val expectedOutput =
@@ -58,7 +58,6 @@ class SquadronTest  extends AnyWordSpec with Matchers with EitherValues {
         }
       }
       "contain plateau, first rover and first command" in {
-        Squadron(s"$p\n$r1\n$r1c") shouldBe right
         Squadron(s"$p\ngarbage\n$r1\n\n$r1c\ngarbage\\\nmore garbage") shouldBe right
       }
       "contain plateau two rovers and their commands" in {

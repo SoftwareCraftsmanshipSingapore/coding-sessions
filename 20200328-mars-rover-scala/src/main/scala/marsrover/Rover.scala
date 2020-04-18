@@ -1,34 +1,60 @@
 package marsrover
 
+import marsrover.Move._
+import marsrover.Rover.MoveResult
+import org.scalactic.{Bad, ErrorMessage, Good, Or}
+
 class Rover(
-  var position: Position,
-  val plateau: Plateau,
-  var lastMoveSuccess: Boolean = true
+  val initialPosition: Position,
+  val plateau: Plateau
 ) {
-  def move(commands: String): Unit = commands.foreach {
-    case 'F' => forward()
-    case 'L' => left()
-    case 'R' => right()
-  }
+  private var _position = initialPosition
+  private var _moves: Moves = List.empty
+  private var _failureReason: Option[String] = None
 
-  def forward(): Unit = {
-    plateau.contains(position.forward()) match {
-      case Some(p) =>
-        lastMoveSuccess = true
-        position = p
-      case None     =>
-        lastMoveSuccess = false
+  def move(commands: Move*): Unit = {
+    @scala.annotation.tailrec
+    def loop(commands: Moves, position: Position, moves: Moves): (Position, Moves, Option[ErrorMessage]) = commands match {
+      case Nil   => (position, moves, None)
+      case m::ms => moveOne(position, m) match {
+        case Good(p)           => loop(ms, p, moves :+ m)
+        case Bad(errorMessage) => (position, moves, Option(errorMessage))
+      }
     }
+    val (np, ms, fr) = loop(commands.toList, _position, _moves)
+    _position = np
+    _moves = ms
+    _failureReason = fr
   }
 
-  def left(): Unit = position = position.left()
+  private def moveOne(p: Position, m: Move): MoveResult = m match {
+    case F => forward(p)
+    case L => left(p)
+    case R => right(p)
+  }
 
-  def right(): Unit = position = position.right()
+  private def forward(p: Position): MoveResult =
+    plateau
+      .contains(p.forward())
+      .map(Good(_))
+      .getOrElse(Bad("encountered edge of plateau"))
 
-  def positionString: String = position.asString
+  private def left(p: Position):MoveResult = Good(p.left())
+
+  private def right(p: Position): MoveResult = Good(p.right())
+
+  def positionString: String = _position.asString
+
+  def moves: Moves = _moves
+  def failureReason: Option[String] = _failureReason
+  def position: Position = _position
 }
 
 object Rover {
+  private type MoveResult = Position Or ErrorMessage
   def apply(x: Int, y: Int, d: Direction, p: Plateau) =
     new Rover(Position(Location(x, y), d), p)
 }
+
+
+

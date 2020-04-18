@@ -8,6 +8,6 @@ case class Position(location: Location, direction: Direction) {
 }
 
 object Position {
-  def apply(x: String, y: String, d: String): Position = Position(Location(x, y), Direction.from(d))
+  def apply(x: String, y: String, d: String): Position = Position(Location(x, y), Direction(d))
   def apply(x: Int, y: Int, d: Direction): Position = Position(Location(x, y), d)
 }

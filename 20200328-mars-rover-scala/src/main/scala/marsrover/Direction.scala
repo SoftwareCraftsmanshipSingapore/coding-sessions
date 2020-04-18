@@ -11,7 +11,7 @@ object Direction {
   case object E extends Direction(N, S)
   case object W extends Direction(S, N)
 
-  def from(s: String): Direction =
+  def apply(s: String): Direction =
     s match {
       case "N" => N
       case "S" => S
