@@ -9,8 +9,7 @@ import org.scalatest.wordspec.AnyWordSpec
 //      1.2  line delimiters assumed to be \n\n
 //      1.3  rover position outside of plateau
 //TODO: 2. Collision detection
-//      2.1  result communication
-//TODO: 3. Boundary detection
+//      2.1  prevent rovers from moving into the same cell at the same time
 //TODO: 4. One rover succeeds one fails
 //TODO: 5. World exploration
 //      5.1 world setup
@@ -85,5 +84,36 @@ class SquadronTest  extends AnyWordSpec with Matchers with EitherValues {
         Squadron(s"$p\n$r1\n$r1c\n$r2\n$r2c\n$r3\ngarbage\n") shouldBe Left("3 rover positions and missing last rover commands")
       }
     }
+
+    "with two rovers" should {
+      "track their single moves north" in {
+        val instructions =
+          s"""
+           |5 5
+           |
+           |0 0 N
+           |
+           |RR
+           |
+           |1 0 N
+           |
+           |FRFL
+           |""".stripMargin
+
+        val result =
+          """
+            |0 0 S
+            |
+            |2 1 N
+            |""".stripMargin
+
+        val squadron: Squadron = Squadron(instructions).getOrElse(sys.error("error"))
+//        squadron.executeOne()
+//        squadron.executeOne()
+        squadron.execute()
+        squadron.result shouldBe result
+      }
+    }
   }
+
 }

@@ -74,7 +74,6 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
     }
   }
 
-
   "a rover" when {
     val directions = Table("direction", N, W, S, E)
     directions.forEvery{
@@ -89,4 +88,14 @@ class RoverTest extends org.scalatest.wordspec.AnyWordSpec with Matchers with Ta
     }
   }
 
+  "a rover primed with two commands" when {
+    "asked to make a single move" should {
+      "report position after that single move" in {
+        val rover = Rover(0, 0, N, Plateau(2, 2))
+        rover.takeCommands(F, F)
+        rover.doOneCommand()
+        rover.canMove shouldBe true
+      }
+    }
+  }
 }

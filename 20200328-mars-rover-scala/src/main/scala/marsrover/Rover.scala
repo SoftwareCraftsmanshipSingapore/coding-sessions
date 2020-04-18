@@ -4,6 +4,8 @@ import marsrover.Move._
 import marsrover.Rover.MoveResult
 import org.scalactic.{Bad, ErrorMessage, Good, Or}
 
+import scala.collection.mutable
+
 class Rover(
   val initialPosition: Position,
   val plateau: Plateau
@@ -11,6 +13,30 @@ class Rover(
   private var _position = initialPosition
   private var _moves: Moves = List.empty
   private var _failureReason: Option[String] = None
+  private val _commandQueue: mutable.Queue[Move] = mutable.Queue.empty
+
+  mutable.Queue
+  def canMove: Boolean = _commandQueue.nonEmpty && failureReason.isEmpty
+
+  def takeCommands(commands: Move*): Unit = commands.foreach(_commandQueue.enqueue)
+
+  def doOneCommand(): Unit = {
+    nextMove().foreach {
+      c =>
+        moveOne(_position, c) match {
+          case Good(np)   =>
+            _position = np
+            _moves :+= c
+          case Bad(error) =>
+            _failureReason = Option(error)
+        }
+    }
+  }
+
+  private def nextMove(): Option[Move] =
+    if (canMove)
+      Option(_commandQueue.dequeue())
+    else None
 
   def move(commands: Move*): Unit = {
     @scala.annotation.tailrec

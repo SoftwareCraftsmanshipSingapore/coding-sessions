@@ -4,11 +4,18 @@ import marsrover.Move._
 import marsrover.Squadron.Rovers
 import marsrover.parser.fsm.Parser
 
-class Squadron(rovers: Rovers, commands: List[Moves]) {
-  def execute() : Unit =
-    rovers.zip(commands).foreach {
-      case (r, cs) => r.move(cs: _*)
+class Squadron(rovers: Rovers) {
+
+  def execute() : Unit = {
+    @scala.annotation.tailrec
+    def loop(rovers: Rovers): Unit = rovers.filter(_.canMove) match {
+      case Nil =>
+      case rs  =>
+        rs.foreach(_.doOneCommand())
+        loop(rs)
     }
+    loop(rovers)
+  }
 
   def result: String = rovers.map(_.positionString).mkString("\n", "\n\n", "\n")
 }
@@ -19,16 +26,6 @@ object Squadron {
   type Command = String
 
   def apply(instructions: String): Either[String, Squadron] = {
-/*
-    parser.fast.instruction(instructions) match {
-      case Parsed.Success((plateau, roverPositionsAndCommands), _) =>
-        val (positions, moves) = roverPositionsAndCommands.unzip
-        Right(new Squadron(mkRovers(plateau, positions), moves.toList))
-      case f@Parsed.Failure(_, index, _) =>
-        val t = f.trace(true)
-        Left(s"index: $index expected: ${t.label}")
-    }
-*/
 
     import marsrover.parser.fsm.Parser._
     @scala.annotation.tailrec
@@ -46,16 +43,20 @@ object Squadron {
         case New                 => Left("empty set of instructions")
         case _:JustPlateau       => Left("only plateau")
         case _:FirstRover        => Left("only one rover position")
-        case p:FirstCommand      => Right(new Squadron(mkRovers(p.plateau, Seq(p.position)), List(p.move)))
+        case p:FirstCommand      => Right(new Squadron(mkRovers(p.plateau, Seq(p.position), List(p.move))))
         case _:SecondRover       => Left("two rover positions and missing 2nd rover commands")
-        case p:TwoOrMoreCommands => Right(new Squadron(mkRovers(p.plateau, p.positions), p.moves))
+        case p:TwoOrMoreCommands => Right(new Squadron(mkRovers(p.plateau, p.positions, p.moves)))
         case p:TwoOrMoreRovers   => Left(s"${p.positions.length} rover positions and missing last rover commands")
       }
       case Left(errors) => Left(errors)
     }
   }
 
-
-
-  private def mkRovers(plateau: Plateau, positions: Positions) = positions.map(p => new Rover(p, plateau))
+  private def mkRovers(plateau: Plateau, positions: Positions,commands: List[Moves]) =
+    positions.zip(commands).map {
+      case(p, cs) =>
+        val r = new Rover(p, plateau)
+        r.takeCommands(cs:_*)
+        r
+    }
 }
