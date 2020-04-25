@@ -1,0 +1,45 @@
++ character added
+- character removed
+
+Examples:
+
+through the door was the living room.
+It was fine throughout.
+
+++++++++++++T+hrough+++the door was the living room.
+It was fine -throughout----------------------------.
+
+====
+
+abc
+cba
+
+???
+
+abc++
+--cba
+
+====
+
+abc
+cde
+
+abc++
+--cde
+
+===
+
+abc111abc
+abcabc
+
+abc111abc
+abc---abc
+
+===
+
+abcd111aaa
+abcaa
+
+abcd111aaa
+abc----aa-
+
