@@ -43,3 +43,5 @@
 2020-02-01: Pocker hands, python
 
 2020-03-14: [Mars rovers](https://code.google.com/archive/p/marsrovertechchallenge/), python
+
+2020-05-02: [Enchanting](https://katalyst.codurance.com/enchanting), javascript
