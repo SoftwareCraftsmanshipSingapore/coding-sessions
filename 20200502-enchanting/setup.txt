@@ -1,0 +1,26 @@
+Setting up for ES6 and jest test runner
+=======================================
+
+Initialize and install packages
+
+    mkdir new_kata && cd new_kata
+    npm init
+    npm install --save-dev jest @babel/core @babel/preset-env @babel/plugin-proposal-class-properties
+
+Create `.babelrc` with:
+
+    {
+    "presets": ["@babel/preset-env"],
+    "plugins": ["@babel/plugin-proposal-class-properties"]
+    }
+
+Edit `package.json` to run `jest`:
+
+    "scripts": {
+        "test": "jest"
+    },
+
+Run tests with
+
+    npm test
+
