@@ -26,8 +26,8 @@ class packageTest extends AnyWordSpec with TableDrivenPropertyChecks with Matche
                                                                    , "The______ pencil is red."          )
       ,("To be or not to be."       , "To have been or not."       , "To _____be__ or not to be."
                                                                    , "To have been or not.______"        )
-      ,("Honolulu is next stop."    , "Honour in the lulu stops."  , "Hono__________lulu is next stop_."
-                                                                   , "Honour in the lulu ________stops." )
+      ,("Honolulu is next stop."    , "Honour in the lulu steps."  , "Hono__________lulu is next stop._"
+                                                                   , "Honour in the lulu ________steps." )
       ,("A book a day is the way!"  , "I book a ticket this way."  , "A book a day is the_ way!"         
                                                                    , "I book a ticket this way."         )
       ,("through the looking glass" , "thorough glass cleaner"     , "th_rough the looking glass________"
@@ -41,44 +41,5 @@ class packageTest extends AnyWordSpec with TableDrivenPropertyChecks with Matche
           (d.diffA, d.diffB) shouldBe (da, db)
         }
     }
-  }
-
-  "gcs" when {
-    val td = Table(
-       ("a"  , "b"  , "gcs"        )
-      ,("a"  , "b"  , None         )
-      ,("a"  , ""   , None         )
-      ,("a"  , "ab" , Option("a")  )
-      ,("abc", "ab" , Option("ab") )
-      ,("abc", "bcd", Option("bc") )
-    )
-    td.forEvery{
-      (a, b, s) =>
-        s"a: $a, b: $b, s: $s" in {
-          gcs(a, b) shouldBe s
-        }
-    }
-
-  }
-
-  "substrings" when {
-    val td = Table(
-       ("string", "subs")
-      ,("abc"   , List("abc"   ,"ab", "bc"/*, "a", "b", "c"*/))
-      ,("abcd"  , List("abcd"  ,"abc", "bcd", "ab", "bc", "cd"/*, "a", "b", "c", "d"*/))
-      ,("abcde" , List("abcde" ,"abcd", "bcde", "abc", "bcd", "cde", "ab", "bc", "cd", "de"/*, "a", "b", "c", "d", "e"*/))
-    )
-    td.forEvery {
-      (s, subs) =>
-        s"s:$s => ${subs.mkString(", ")}" in {
-          substrings(s).toList shouldBe subs
-        }
-    }
-  }
-
-  "string2chunks" in {
-    string2chunks("abc", "a") shouldBe List("", "a", "bc")
-    string2chunks("abc", "b") shouldBe List("a","b","c")
-    string2chunks("abcdef", "cd") shouldBe List("ab","cd","ef")
   }
 }
