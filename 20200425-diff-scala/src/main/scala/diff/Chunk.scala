@@ -14,11 +14,12 @@ object Chunk {
 
   private def gcs(a: String, b: String): Option[String] = {
     val (s, l) = if (a < b) a -> b else b -> a
-    s.length match {
-      case 0 => None
-      case 1 => Option(s).find(l.contains)
-      case _ => substrings(s).find(l.contains)
+    val subs = s.length match {
+      case 0 => Iterator.empty[String]
+      case 1 => Iterator(s)
+      case _ => substrings(s)
     }
+    subs.find(l.contains)
   }
 
   private def substrings(string: String): Iterator[String] = {
