@@ -31,8 +31,8 @@ export class MagicBook {
   constructor(selectFn){
     this.selectFn = selectFn
     this.enchantments = [
-      {prefix: "Inferno"},
-      {prefix: "Icy"}
+      {prefix: "Inferno", extraAttr: "+5 fire damage"},
+      {prefix: "Icy", extraAttr: "+5 ice damage"}
     ]
   }
 
@@ -44,8 +44,8 @@ export class MagicBook {
 
 export class Durance {
 
-  constructor(magic, addOrRemove) {
-    this.weapon = new Weapon("Dagger of the Nooblet")
+  constructor(weaponSpec, magic, addOrRemove) {
+    this.weapon = new Weapon(weaponSpec)
     this.magic = magic
     this.addOrRemove = addOrRemove
   }
