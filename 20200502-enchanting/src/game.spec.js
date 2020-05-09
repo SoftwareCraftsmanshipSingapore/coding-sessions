@@ -42,14 +42,21 @@ describe("Weapon", ()=> {
 
 describe("Durance", () => {
 
-  let durance, enchantmentIndex, removeMagic
+  let durance, enchantmentPrefix, removeMagic
+  function select(prefixes) {
+    if (enchantmentPrefix !== "") {
+       if (!prefixes.includes(enchantmentPrefix))
+         throw new Error("'" + enchantmentPrefix + "'" + " is not in [" + prefixes + "]")
+    }
+    return enchantmentPrefix
+  }
   beforeEach(() => {
     durance = new Durance(
       weaponSpec,
-      new MagicBook((maxN) => enchantmentIndex),
+      new MagicBook(select),
       () => !removeMagic
     )
-    enchantmentIndex = 0
+    enchantmentPrefix = ""
     removeMagic = false
   })
 
@@ -58,6 +65,7 @@ describe("Durance", () => {
   })
 
   it("enchant once", () => {
+    enchantmentPrefix = "Inferno"
     durance.enchant()
     let expected =
         "Inferno Dagger of the Nooblet\n" +
@@ -68,8 +76,9 @@ describe("Durance", () => {
   })
 
   it("enchant twice", () => {
+    enchantmentPrefix = "Inferno"
     durance.enchant()
-    enchantmentIndex = 0
+    enchantmentPrefix = "Icy"
     durance.enchant()
     let expected =
         "Icy Dagger of the Nooblet\n" +
@@ -79,11 +88,11 @@ describe("Durance", () => {
     expect(durance.describeWeapon()).toEqual(expected)
   })
 
-  xit("try enchant twice with same enchantment", () => {
-    //TODO: fix randomness control
+  it("try enchant twice with same enchantment", () => {
+    enchantmentPrefix = "Inferno"
     durance.enchant()
-    enchantmentIndex = 0
-    durance.enchant()
+    enchantmentPrefix = "Inferno"
+    expect(() => durance.enchant()).toThrow(Error("'Inferno' is not in [Icy,Foo]"))
     let expected =
         "Inferno Dagger of the Nooblet\n" +
         " 5 - 10 attack damage\n" +
@@ -93,6 +102,7 @@ describe("Durance", () => {
   })
 
   it("enchantment can be removed", () => {
+    enchantmentPrefix = "Inferno"
     durance.enchant()
     removeMagic = true
     durance.enchant()

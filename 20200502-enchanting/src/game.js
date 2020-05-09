@@ -26,7 +26,7 @@ export class Weapon {
   }
 
   stats() {
-    let attrs = [...this.attrs, ...this.extraAttrs]
+    let attrs = this.attrs.concat(this.extraAttrs)
     return `${this.prefix} ${this.name}`.trim() + "\n" + attrs.map(a => " " + a).join("\n")
   }
 }
@@ -44,9 +44,8 @@ export class MagicBook {
 
   giveOne(prefix) {
     let enchantments = this.enchantments.filter(e => e.prefix !== prefix)
-    let maxN = enchantments.length
-    let pick = this.selectFn(maxN)
-    return enchantments[pick]
+    let pick = this.selectFn(enchantments.map(e => e.prefix))
+    return enchantments.find(e => e.prefix === pick)
   }
 }
 
@@ -61,7 +60,6 @@ export class Durance {
   enchant() {
     if (this.addOrRemove() === true) {
       let enchantment = this.magic.giveOne(this.weapon.current_enchantment())
-      this.weapon.remove_enchantment()
       this.weapon.enchant(enchantment)
     } else {
       this.weapon.remove_enchantment()
