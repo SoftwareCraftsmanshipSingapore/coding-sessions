@@ -3,21 +3,27 @@ function pickRandom(maxN) {
 }
 
 export class Weapon {
-  constructor(name){
-    this.name = name
+  constructor(weaponSpec){
+    this.name = weaponSpec.name
+    this.attrs = weaponSpec.attrs
+
     this.prefix = ""
+    this.extraAttrs = []
   }
 
   enchant(enchantment){
-      this.prefix = enchantment.prefix
+    this.prefix = enchantment.prefix
+    this.extraAttrs = [enchantment.extraAttr]
   }
 
   remove_enchantment(){
     this.prefix = ""
+    this.extraAttrs = []
   }
 
   stats() {
-    return `${this.prefix} ${this.name}`.trim()
+    let attrs = [...this.attrs, ...this.extraAttrs]
+    return `${this.prefix} ${this.name}`.trim() + "\n" + attrs.map(a => " " + a).join("\n")
   }
 }
 

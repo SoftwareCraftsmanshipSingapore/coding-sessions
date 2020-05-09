@@ -3,21 +3,38 @@ import {beforeEach, describe, expect, it} from "@jest/globals";
 
 describe("Weapon", ()=> {
 
+  let weaponSpec = {
+    name: "Dagger of the Nooblet",
+    attrs: ["5 - 10 attack damage","1.2 attack speed"]
+  }
+  let daggerStats =
+      "Dagger of the Nooblet\n" +
+      " 5 - 10 attack damage\n" +
+      " 1.2 attack speed"
+
   let weapon
   beforeEach(() => {
-    weapon = new Weapon("foo")
+    weapon = new Weapon(weaponSpec)
+  })
+
+  it("can make a new weapon", () => {
+    expect(weapon.stats()).toEqual(daggerStats)
   })
 
   it("can be enchanted", () => {
-    expect(weapon.stats()).toEqual("foo")
-    weapon.enchant({prefix: "prefix"})
-    expect(weapon.stats()).toEqual("prefix foo")
+    let expected =
+        "prefix Dagger of the Nooblet\n" +
+        " 5 - 10 attack damage\n" +
+        " 1.2 attack speed\n" +
+        " extra"
+    weapon.enchant({prefix: "prefix", extraAttr: "extra"})
+    expect(weapon.stats()).toEqual(expected)
   })
 
   it("can remove enchantment", () => {
-    weapon.enchant({prefix: "prefix"})
+    weapon.enchant({prefix: "prefix", extraAttr: "extra"})
     weapon.remove_enchantment()
-    expect(weapon.stats()).toEqual("foo")
+    expect(weapon.stats()).toEqual(daggerStats)
   })
 
 })
