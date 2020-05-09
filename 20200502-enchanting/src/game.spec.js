@@ -69,13 +69,26 @@ describe("Durance", () => {
 
   it("enchant twice", () => {
     durance.enchant()
-    enchantmentIndex = 1
+    enchantmentIndex = 0
     durance.enchant()
     let expected =
         "Icy Dagger of the Nooblet\n" +
         " 5 - 10 attack damage\n" +
         " 1.2 attack speed\n" +
         " +5 ice damage"
+    expect(durance.describeWeapon()).toEqual(expected)
+  })
+
+  xit("try enchant twice with same enchantment", () => {
+    //TODO: fix randomness control
+    durance.enchant()
+    enchantmentIndex = 0
+    durance.enchant()
+    let expected =
+        "Inferno Dagger of the Nooblet\n" +
+        " 5 - 10 attack damage\n" +
+        " 1.2 attack speed\n" +
+        " +5 fire damage"
     expect(durance.describeWeapon()).toEqual(expected)
   })
 

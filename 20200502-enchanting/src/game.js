@@ -20,6 +20,10 @@ export class Weapon {
     this.prefix = ""
     this.extraAttrs = []
   }
+  
+  current_enchantment(){
+    return this.prefix
+  }
 
   stats() {
     let attrs = [...this.attrs, ...this.extraAttrs]
@@ -28,17 +32,21 @@ export class Weapon {
 }
 
 export class MagicBook {
+
   constructor(selectFn){
     this.selectFn = selectFn
     this.enchantments = [
       {prefix: "Inferno", extraAttr: "+5 fire damage"},
-      {prefix: "Icy", extraAttr: "+5 ice damage"}
+      {prefix: "Icy", extraAttr: "+5 ice damage"},
+      {prefix: "Foo", extraAttr: "bar"}
     ]
   }
 
-  giveOne() {
-    let maxN = this.enchantments.length
-    return this.enchantments[this.selectFn(maxN)]
+  giveOne(prefix) {
+    let enchantments = this.enchantments.filter(e => e.prefix !== prefix)
+    let maxN = enchantments.length
+    let pick = this.selectFn(maxN)
+    return enchantments[pick]
   }
 }
 
@@ -52,7 +60,8 @@ export class Durance {
 
   enchant() {
     if (this.addOrRemove() === true) {
-      let enchantment = this.magic.giveOne()
+      let enchantment = this.magic.giveOne(this.weapon.current_enchantment())
+      this.weapon.remove_enchantment()
       this.weapon.enchant(enchantment)
     } else {
       this.weapon.remove_enchantment()
