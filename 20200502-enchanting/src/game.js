@@ -33,37 +33,40 @@ export class Weapon {
 
 export class MagicBook {
 
-  constructor(selectFn){
+  constructor(enchantments, selectFn, removeFn){
     this.selectFn = selectFn
-    this.enchantments = [
-      {prefix: "Inferno", extraAttr: "+5 fire damage"},
-      {prefix: "Icy", extraAttr: "+5 ice damage"},
-      {prefix: "Foo", extraAttr: "bar"}
-    ]
+    this.removeFn = removeFn
+    this.enchantments = enchantments
   }
 
-  giveOne(prefix) {
-    let enchantments = this.enchantments.filter(e => e.prefix !== prefix)
+  possibleEnchantments(weapon){
+    return this.enchantments.filter(e => e.prefix !== weapon.current_enchantment())
+  }
+
+  giveOne(weapon) {
+    let enchantments = this.possibleEnchantments(weapon)
     let pick = this.selectFn(enchantments.map(e => e.prefix))
     return enchantments.find(e => e.prefix === pick)
+  }
+
+  enchant(weapon) {
+    if ( this.removeFn() ){
+      weapon.remove_enchantment()
+    } else {
+      weapon.enchant(this.giveOne(weapon))
+    }
   }
 }
 
 export class Durance {
 
-  constructor(weaponSpec, magic, addOrRemove) {
+  constructor(weaponSpec, magicBook) {
     this.weapon = new Weapon(weaponSpec)
-    this.magic = magic
-    this.addOrRemove = addOrRemove
+    this.magicBook = magicBook
   }
 
   enchant() {
-    if (this.addOrRemove() === true) {
-      let enchantment = this.magic.giveOne(this.weapon.current_enchantment())
-      this.weapon.enchant(enchantment)
-    } else {
-      this.weapon.remove_enchantment()
-    }
+    this.magicBook.enchant(this.weapon)
   }
 
   describeWeapon() { return this.weapon.stats() }
