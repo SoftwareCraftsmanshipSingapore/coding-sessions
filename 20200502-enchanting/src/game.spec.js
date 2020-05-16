@@ -1,4 +1,4 @@
-import {Durance, Weapon, MagicBook} from './game'
+import {Durance, Weapon, MagicBook, Enchantment} from './game'
 import {beforeEach, describe, expect, it} from "@jest/globals";
 
 let weaponSpec = {
@@ -10,12 +10,6 @@ let daggerStats =
     "Dagger of the Nooblet\n" +
     " 5 - 10 attack damage\n" +
     " 1.2 attack speed"
-
-let enchantmentsSpecs = [
-      {prefix: "Inferno", extraAttr: "+5 fire damage"},
-      {prefix: "Icy", extraAttr: "+5 ice damage"},
-      {prefix: "Foo", extraAttr: "bar"}
-    ]
 
 describe("Weapon", ()=> {
 
@@ -34,7 +28,7 @@ describe("Weapon", ()=> {
         " 5 - 10 attack damage\n" +
         " 1.2 attack speed\n" +
         " extra"
-    weapon.enchant({prefix: "prefix", extraAttr: "extra"})
+    weapon.enchant(new Enchantment("prefix", ["extra"]))
     expect(weapon.stats()).toEqual(expected)
   })
 
@@ -59,7 +53,7 @@ describe("Durance", () => {
   beforeEach(() => {
     durance = new Durance(
       weaponSpec,
-      new MagicBook(enchantmentsSpecs, select, () => removeMagic)
+      new MagicBook(select, () => removeMagic)
     )
     enchantmentPrefix = ""
     removeMagic = false
@@ -127,16 +121,8 @@ describe("MagicBook", () => {
   let enchantmentPrefix, removeEnchantment
   let magicBook, weapon
 
-  function select(prefixes) {
-    if (enchantmentPrefix !== "") {
-       if (!prefixes.includes(enchantmentPrefix))
-         throw new Error("'" + enchantmentPrefix + "'" + " is not in [" + prefixes + "]")
-    }
-    return enchantmentPrefix
-  }
-
   beforeEach(() => {
-    magicBook = new MagicBook(enchantmentsSpecs, select, () => removeEnchantment)
+    magicBook = new MagicBook(() => enchantmentPrefix, () => removeEnchantment)
     weapon = new Weapon(testWeaponSpec)
     enchantmentPrefix = ""
     removeEnchantment = false
@@ -167,6 +153,12 @@ describe("MagicBook", () => {
   it("should be able to remove enchantment", () => {
     enchantmentPrefix = "Inferno"
     magicBook.enchant(weapon)
+    magicBook.enchant(weapon)
+    let expectedEnchanted =
+        "Inferno test weapon\n" +
+        " weapon attr\n" +
+        " +5 fire damage"
+    expect(weapon.stats()).toEqual(expectedEnchanted)
     removeEnchantment = true
     magicBook.enchant(weapon)
     let expected =
@@ -175,29 +167,19 @@ describe("MagicBook", () => {
     expect(weapon.stats()).toEqual(expected)
   })
 
-  xit("should not be able to enchant twice with the same", () => {
-    const selectMock = jest.fn(select)
-    magicBook = new MagicBook(enchantmentsSpecs, selectMock, () => removeEnchantment)
+  it("should not be able to enchant twice with the same", () => {
+    const selectMock = jest.fn(() => enchantmentPrefix)
+    magicBook = new MagicBook(selectMock, () => removeEnchantment)
     enchantmentPrefix = "Inferno"
     magicBook.enchant(weapon)
     magicBook.enchant(weapon)
-    expect(selectMock).lastCalledWith([])
-  })
-
-  it("possible enchantments should exlude current weapon enchantment", () => {
-    enchantmentsSpecs = [
-        {prefix: "Inferno", extraAttr: "+5 fire damage"},
-      ]
-    magicBook = new MagicBook(enchantmentsSpecs, select, () => removeEnchantment)
-    enchantmentPrefix = "Inferno"
-    magicBook.enchant(weapon)
-    let ench = magicBook.possibleEnchantments(weapon)
-    expect(ench).toEqual([])
-  })
-
-  it("possible enchantments returns all enchantments for non enchanted weapon", () => {
-    let ench = magicBook.possibleEnchantments(weapon)
-    expect(ench).toEqual(enchantmentsSpecs)
+    expect(selectMock).toBeCalledWith(["Inferno", "Icy", "Foo"])
+    expect(selectMock).toBeCalledWith(["Icy", "Foo"])
+    let expectedStats =
+        "Inferno test weapon\n" +
+        " weapon attr\n" +
+        " +5 fire damage"
+    expect(weapon.stats()).toEqual(expectedStats)
   })
 
 })
