@@ -153,7 +153,6 @@ describe("MagicBook", () => {
   it("should be able to remove enchantment", () => {
     enchantmentPrefix = "Inferno"
     magicBook.enchant(weapon)
-    magicBook.enchant(weapon)
     let expectedEnchanted =
         "Inferno test weapon\n" +
         " weapon attr\n" +
@@ -168,6 +167,8 @@ describe("MagicBook", () => {
   })
 
   it("should not be able to enchant twice with the same", () => {
+    //testing a faulty select function
+    //NOT testing production behaviour with a correct select function
     const selectMock = jest.fn(() => enchantmentPrefix)
     magicBook = new MagicBook(selectMock, () => removeEnchantment)
     enchantmentPrefix = "Inferno"
