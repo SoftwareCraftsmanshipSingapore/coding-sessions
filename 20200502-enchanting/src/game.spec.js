@@ -1,9 +1,9 @@
-import {Durance, Weapon, MagicBook, Enchantment} from './game'
+import {Durance, Weapon, MagicBook, Enchantment, Attribute} from './game'
 import {beforeEach, describe, expect, it} from "@jest/globals";
 
 let weaponSpec = {
   name: "Dagger of the Nooblet",
-  attrs: ["5 - 10 attack damage", "1.2 attack speed"]
+  attrs: [new Attribute("5 - 10", "attack damage"), new Attribute("1.2", "attack speed")]
 }
 
 let daggerStats =
@@ -27,15 +27,38 @@ describe("Weapon", ()=> {
         "prefix Dagger of the Nooblet\n" +
         " 5 - 10 attack damage\n" +
         " 1.2 attack speed\n" +
-        " extra"
-    weapon.enchant(new Enchantment("prefix", ["extra"]))
+        " +5 extra"
+    weapon.enchant(new Enchantment("prefix", new Attribute("+5", "extra")))
     expect(weapon.stats()).toEqual(expected)
   })
 
   it("can remove enchantment", () => {
     weapon.enchant({prefix: "prefix", extraAttr: "extra"})
+    //TODO: verify weapon stats
     weapon.remove_enchantment()
     expect(weapon.stats()).toEqual(daggerStats)
+  })
+
+  it("basic weapon has dps", () => {
+    let weaponSpec = {
+      name: "Dagger of the Nooblet",
+      attrs: [new Attribute("5 - 21", "attack damage"), new Attribute("1.2", "attack speed")]
+    }
+    weapon = new Weapon(weaponSpec)
+    let expectedDps = (21 + 5) / 2 / 1.2
+    expect(weapon.dps()).toBeCloseTo(expectedDps)
+  })
+
+  it("a weapon enchanted with Agility has dps", () => {
+    let weaponSpec = {
+      name: "Dagger of the Nooblet",
+      attrs: [new Attribute("5 - 21", "attack damage"), new Attribute("1.2", "attack speed")]
+    }
+    weapon = new Weapon(weaponSpec)
+    weapon.enchant(new Enchantment("Quick", new Attribute("+5", "agility")))
+    let expectedSpeed = (1.2 + 5) / 10
+    let expectedDps = (21 + 5) / 2 / expectedSpeed
+    expect(weapon.dps()).toBeCloseTo(expectedDps)
   })
 
 })
@@ -115,7 +138,7 @@ describe("MagicBook", () => {
 
   let testWeaponSpec = {
     name: "test weapon",
-    attrs: ["weapon attr"]
+    attrs: [new Attribute("+5", "weapon attr")]
   }
 
   let enchantmentPrefix, removeEnchantment
@@ -133,7 +156,7 @@ describe("MagicBook", () => {
     magicBook.enchant(weapon)
     let expected =
         "Inferno test weapon\n" +
-        " weapon attr\n" + 
+        " +5 weapon attr\n" +
         " +5 fire damage"
     expect(weapon.stats()).toEqual(expected)
   })
@@ -145,7 +168,7 @@ describe("MagicBook", () => {
     magicBook.enchant(weapon)
     let expected =
         "Inferno test weapon\n" +
-        " weapon attr\n" + 
+        " +5 weapon attr\n" +
         " +5 fire damage"
     expect(weapon.stats()).toEqual(expected)
   })
@@ -155,14 +178,14 @@ describe("MagicBook", () => {
     magicBook.enchant(weapon)
     let expectedEnchanted =
         "Inferno test weapon\n" +
-        " weapon attr\n" +
+        " +5 weapon attr\n" +
         " +5 fire damage"
     expect(weapon.stats()).toEqual(expectedEnchanted)
     removeEnchantment = true
     magicBook.enchant(weapon)
     let expected =
         "test weapon\n" +
-        " weapon attr"
+        " +5 weapon attr"
     expect(weapon.stats()).toEqual(expected)
   })
 
@@ -178,7 +201,7 @@ describe("MagicBook", () => {
     expect(selectMock).toBeCalledWith(["Icy", "Foo"])
     let expectedStats =
         "Inferno test weapon\n" +
-        " weapon attr\n" +
+        " +5 weapon attr\n" +
         " +5 fire damage"
     expect(weapon.stats()).toEqual(expectedStats)
   })
