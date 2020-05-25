@@ -1,23 +1,9 @@
 package enchanted
 
-import enchanted.Weapon.{EnchantedWeapon, PlainWeapon}
-
-import scala.util.Random
-
 class Durance {
-  private var weapon:Weapon = PlainWeapon
+  private var weapon = Weapon()
 
-  def enchant(): Unit = {
-    if (Random.nextInt(99) < 10) {
-      weapon = PlainWeapon
-    } else {
-      val enchantment = weapon match {
-        case PlainWeapon                  => MagicBook.next()
-        case EnchantedWeapon(enchantment) => MagicBook.nextExcept(enchantment)
-      }
-      weapon = EnchantedWeapon(enchantment)
-    }
-  }
+  def enchant(): Unit = weapon = MagicBook.enchant(weapon)
 
   def describeWeapon(): String = weapon.stats
 }

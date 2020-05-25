@@ -1,8 +1,7 @@
 package enchanted
 
-import enchanted.Weapon.EnchantedWeapon
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 class DuranceTest extends AnyFreeSpec with Matchers {
   "Durance" - {
@@ -17,8 +16,7 @@ class DuranceTest extends AnyFreeSpec with Matchers {
       ).count(
         _.startsWith("\nDagger")
       )
-
-      (notEnchantedCount.toDouble / numberOfRuns.toDouble) shouldEqual 0.1 +- 0.002
+      (notEnchantedCount.toDouble / numberOfRuns.toDouble) shouldEqual 0.1 +- 0.01
     }
     "should enchant the weapon equally with all available enchantments" - {
       val numberOfRuns = 1000000
@@ -37,7 +35,7 @@ class DuranceTest extends AnyFreeSpec with Matchers {
       enchantmentCounts.map {
         case (name, count) =>
           s"$name" in {
-            (count.toDouble / total.toDouble) shouldEqual 0.2 +- 0.001
+            (count.toDouble / total.toDouble) shouldEqual 0.2 +- 0.008
           }
       }
     }
