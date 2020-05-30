@@ -1,25 +1,30 @@
 import { Given, When, Then } from 'cucumber'
 import { expect } from 'chai'
-import { Account } from '../../../src/account'
+import { Account, Calendar } from '../../../src/account'
 
-let account = new Account()
+let calendar = new Calendar()
+let account = new Account(calendar)
 
 Given('a client makes a deposit of {int} on {string}', function (amount, date) {
-  expect(1).to.eq(1)
+  calendar.today = date
+  account.deposit(amount)
 })
 
 Given('a deposit of {int} on {string}', function (amount, date) {
-  expect(1).to.eq(1)
+  calendar.today = date
+  account.deposit(amount)
 })
 
 Given('a withdrawal of {int} on {string}', function (amount, date) {
-  expect(1).to.eq(1)
+  calendar.today = date
+  account.withdraw(amount)
 })
 
 When('they print their bank statement', function () {
-  expect(1).to.eq(1)
+  account.printStatement()
 });
 
 Then('they would see:', function (dataTable) {
-  expect(1).to.eq(1)
+  let expected = dataTable.hashes()
+  expect(account.statement).to.eql(expected)
 })
