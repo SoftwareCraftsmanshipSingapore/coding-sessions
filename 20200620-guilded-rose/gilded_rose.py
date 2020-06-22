@@ -9,7 +9,7 @@ def increase_quality(quality):
 
 
 def decrease_quality(item):
-    return item.quality - 1 if (item.quality > 0 and item.name != SULFURAS) else item.quality
+    return item.quality - 1 if (item.quality > 0) else item.quality
 
 
 def is_normal(item):
@@ -20,12 +20,12 @@ def is_special(item):
     return item.name in (CHEESE, CONCERT)
 
 
-def increase_concert_quality(item):
+def increase_quality_if_concert(item):
     quality = item.quality
     if item.name == CONCERT:
-        if item.sell_in < 11:
+        if item.sell_in < 10:
             quality = increase_quality(quality)
-        if item.sell_in < 6:
+        if item.sell_in < 5:
             quality = increase_quality(quality)
     return quality
 
@@ -37,22 +37,24 @@ class GildedRose(object):
 
     def update_quality(self):
         for item in self.items:
-            if not is_special(item):
-                item.quality = decrease_quality(item)
+            if item.name == SULFURAS:
+                continue
+
+            item.sell_in = item.sell_in - 1
+
+            if is_special(item):
+                item.quality = increase_quality(item.quality)
+                item.quality = increase_quality_if_concert(item)
             else:
-                if item.quality < 50:
-                    item.quality = item.quality + 1
-                    item.quality = increase_concert_quality(item)
-            if item.name != SULFURAS:
-                item.sell_in = item.sell_in - 1
+                item.quality = decrease_quality(item)
+
             if item.sell_in < 0:
-                if item.name != CHEESE:
-                    if item.name != CONCERT:
-                        item.quality = decrease_quality(item)
-                    else:
+                if item.name == CHEESE:
+                    item.quality = increase_quality(item.quality)
+                elif item.name == CONCERT:
                         item.quality = 0
                 else:
-                    item.quality = increase_quality(item.quality)
+                    item.quality = decrease_quality(item)
 
 
 class Item:
