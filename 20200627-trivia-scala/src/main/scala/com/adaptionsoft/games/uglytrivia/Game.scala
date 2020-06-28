@@ -36,22 +36,21 @@ class Game(playerNames: String*) {
       if (roll % 2 != 0) {
         isGettingOutOfPenaltyBox = true
         println(players(currentPlayer) + " is getting out of the penalty box")
-        places(currentPlayer) = places(currentPlayer) + roll
-        if (places(currentPlayer) > 11) places(currentPlayer) = places(currentPlayer) - 12
-        println(players(currentPlayer) + "'s new location is " + places(currentPlayer))
-        askQuestion()
+        outOfPenaltyBoxRoll(roll)
       }
       else {
         println(players(currentPlayer) + " is not getting out of the penalty box")
         isGettingOutOfPenaltyBox = false
       }
     }
-    else {
-      places(currentPlayer) = places(currentPlayer) + roll
-      if (places(currentPlayer) > 11) places(currentPlayer) = places(currentPlayer) - 12
-      println(players(currentPlayer) + "'s new location is " + places(currentPlayer))
-      askQuestion()
-    }
+    else outOfPenaltyBoxRoll(roll)
+  }
+
+  private def outOfPenaltyBoxRoll(roll: Int): Unit = {
+    places(currentPlayer) = places(currentPlayer) + roll
+    if (places(currentPlayer) > 11) places(currentPlayer) = places(currentPlayer) - 12
+    println(players(currentPlayer) + "'s new location is " + places(currentPlayer))
+    askQuestion()
   }
 
   private def askQuestion(): Unit = {
