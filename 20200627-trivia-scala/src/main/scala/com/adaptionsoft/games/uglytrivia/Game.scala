@@ -11,25 +11,13 @@ class Game(playerNames: String*) {
   private var places: Array[Int] = new Array[Int](6)
   private var purses: Array[Int] = new Array[Int](6)
   private val penaltyBox:mutable.Set[Int] = mutable.Set.empty
-  private var popQuestions: LinkedList[String] = new LinkedList[String]
-  private var scienceQuestions: LinkedList[String] = new LinkedList[String]
-  private var sportsQuestions: LinkedList[String] = new LinkedList[String]
-  private var rockQuestions: LinkedList[String] = new LinkedList[String]
+  private val popQuestions    :Iterator[String] = Iterator.range(0, 49).map(i => "Pop Question " + i)
+  private val scienceQuestions:Iterator[String] = Iterator.range(0, 49).map(i => "Science Question " + i)
+  private val sportsQuestions :Iterator[String] = Iterator.range(0, 49).map(i => "Sports Question " + i)
+  private val rockQuestions   :Iterator[String] = Iterator.range(0, 49).map(i => "Rock Question " + i)
   private var currentPlayer: Int = playerIndices.next()
   private var isGettingOutOfPenaltyBox: Boolean = false
 
-  private def initialize(): Unit = {
-    var i: Int = 0
-    while (i < 50) {
-      popQuestions.addLast("Pop Question " + i)
-      scienceQuestions.addLast("Science Question " + i)
-      sportsQuestions.addLast("Sports Question " + i)
-      rockQuestions.addLast("Rock Question " + i)
-      i += 1
-    }
-  }
-
-  initialize()
   addPlayers()
 
   private def addPlayers(): Unit = {
@@ -77,7 +65,7 @@ class Game(playerNames: String*) {
       case "Sports"  => sportsQuestions
       case "Rock"    => rockQuestions
     }
-    val question = questions.removeFirst()
+    val question = questions.next()
     println(question)
   }
 
