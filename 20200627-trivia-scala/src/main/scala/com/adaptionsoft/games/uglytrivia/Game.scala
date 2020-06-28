@@ -2,13 +2,15 @@ package com.adaptionsoft.games.uglytrivia
 
 import java.util.LinkedList
 
+import scala.collection.mutable
+
 
 class Game(playerNames: String*) {
   private val players: Array[String] = playerNames.toArray
   private val playerIndices = Iterator.continually(players.indices.iterator).flatten
   private var places: Array[Int] = new Array[Int](6)
   private var purses: Array[Int] = new Array[Int](6)
-  private var inPenaltyBox: Array[Boolean] = new Array[Boolean](6)
+  private val penaltyBox:mutable.Set[Int] = mutable.Set.empty
   private var popQuestions: LinkedList[String] = new LinkedList[String]
   private var scienceQuestions: LinkedList[String] = new LinkedList[String]
   private var sportsQuestions: LinkedList[String] = new LinkedList[String]
@@ -36,7 +38,6 @@ class Game(playerNames: String*) {
         val playerIndex = i + 1
         places(playerIndex) = 0
         purses(playerIndex) = 0
-        inPenaltyBox(playerIndex) = false
         println(p + " was added")
         println("They are player number " + playerIndex)
     }
@@ -45,7 +46,7 @@ class Game(playerNames: String*) {
   def roll(roll: Int): Unit = {
     println(players(currentPlayer) + " is the current player")
     println("They have rolled a " + roll)
-    if (inPenaltyBox(currentPlayer)) {
+    if (penaltyBox(currentPlayer)) {
       if (roll % 2 != 0) {
         isGettingOutOfPenaltyBox = true
         println(players(currentPlayer) + " is getting out of the penalty box")
@@ -88,10 +89,10 @@ class Game(playerNames: String*) {
   }
 
   def wasCorrectlyAnswered: Boolean = {
-    if (inPenaltyBox(currentPlayer)) {
+    if (penaltyBox(currentPlayer)) {
       if (isGettingOutOfPenaltyBox) {
         println("Answer was correct!!!!")
-        purses(currentPlayer) += 1
+        incCurrentPlayerPurse()
         println(players(currentPlayer) + " now has " + purses(currentPlayer) + " Gold Coins.")
         var winner: Boolean = didPlayerWin
         advancePlayer()
@@ -104,7 +105,7 @@ class Game(playerNames: String*) {
     }
     else {
       println("Answer was corrent!!!!")
-      purses(currentPlayer) += 1
+      incCurrentPlayerPurse()
       println(players(currentPlayer) + " now has " + purses(currentPlayer) + " Gold Coins.")
       var winner: Boolean = didPlayerWin
       advancePlayer()
@@ -115,11 +116,12 @@ class Game(playerNames: String*) {
   def wrongAnswer: Boolean = {
     println("Question was incorrectly answered")
     println(players(currentPlayer) + " was sent to the penalty box")
-    inPenaltyBox(currentPlayer) = true
+    penaltyBox += currentPlayer
     advancePlayer()
     true
   }
 
+  private def incCurrentPlayerPurse(): Unit = purses(currentPlayer) += 1
   private def advancePlayer(): Unit = currentPlayer = playerIndices.next()
   private def didPlayerWin: Boolean = !(purses(currentPlayer) == 6)
 }
