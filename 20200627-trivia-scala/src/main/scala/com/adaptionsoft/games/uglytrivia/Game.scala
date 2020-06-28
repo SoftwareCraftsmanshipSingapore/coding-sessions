@@ -41,7 +41,6 @@ class Game(playerNames: String*) {
         places(currentPlayer) = places(currentPlayer) + roll
         if (places(currentPlayer) > 11) places(currentPlayer) = places(currentPlayer) - 12
         println(players(currentPlayer) + "'s new location is " + places(currentPlayer))
-        println("The category is " + currentCategory)
         askQuestion()
       }
       else {
@@ -53,12 +52,12 @@ class Game(playerNames: String*) {
       places(currentPlayer) = places(currentPlayer) + roll
       if (places(currentPlayer) > 11) places(currentPlayer) = places(currentPlayer) - 12
       println(players(currentPlayer) + "'s new location is " + places(currentPlayer))
-      println("The category is " + currentCategory)
       askQuestion()
     }
   }
 
   private def askQuestion(): Unit = {
+    println("The category is " + currentCategory)
     val questions = currentCategory match {
       case "Pop"     => popQuestions
       case "Science" => scienceQuestions
