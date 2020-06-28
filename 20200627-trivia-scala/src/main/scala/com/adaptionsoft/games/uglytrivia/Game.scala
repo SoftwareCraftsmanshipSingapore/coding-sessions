@@ -5,7 +5,6 @@ import java.util.LinkedList
 
 class Game(playerNames: String*) {
   private val players: Array[String] = playerNames.toArray
-  private val howManyPlayers: Int = players.length
   private val playerIndices = Iterator.continually(players.indices.iterator).flatten
   private var places: Array[Int] = new Array[Int](6)
   private var purses: Array[Int] = new Array[Int](6)
@@ -14,7 +13,7 @@ class Game(playerNames: String*) {
   private var scienceQuestions: LinkedList[String] = new LinkedList[String]
   private var sportsQuestions: LinkedList[String] = new LinkedList[String]
   private var rockQuestions: LinkedList[String] = new LinkedList[String]
-  private var currentPlayer: Int = 0
+  private var currentPlayer: Int = playerIndices.next()
   private var isGettingOutOfPenaltyBox: Boolean = false
 
   private def initialize(): Unit = {
@@ -95,13 +94,11 @@ class Game(playerNames: String*) {
         purses(currentPlayer) += 1
         println(players(currentPlayer) + " now has " + purses(currentPlayer) + " Gold Coins.")
         var winner: Boolean = didPlayerWin
-        currentPlayer += 1
-        if (currentPlayer == howManyPlayers) currentPlayer = 0
+        advancePlayer()
         winner
       }
       else {
-        currentPlayer += 1
-        if (currentPlayer == howManyPlayers) currentPlayer = 0
+        advancePlayer()
         true
       }
     }
@@ -110,8 +107,7 @@ class Game(playerNames: String*) {
       purses(currentPlayer) += 1
       println(players(currentPlayer) + " now has " + purses(currentPlayer) + " Gold Coins.")
       var winner: Boolean = didPlayerWin
-      currentPlayer += 1
-      if (currentPlayer == howManyPlayers) currentPlayer = 0
+      advancePlayer()
       winner
     }
   }
@@ -120,10 +116,10 @@ class Game(playerNames: String*) {
     println("Question was incorrectly answered")
     println(players(currentPlayer) + " was sent to the penalty box")
     inPenaltyBox(currentPlayer) = true
-    currentPlayer += 1
-    if (currentPlayer == howManyPlayers) currentPlayer = 0
+    advancePlayer()
     true
   }
 
+  private def advancePlayer(): Unit = currentPlayer = playerIndices.next()
   private def didPlayerWin: Boolean = !(purses(currentPlayer) == 6)
 }
