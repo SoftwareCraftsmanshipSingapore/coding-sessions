@@ -1,9 +1,6 @@
 package com.adaptionsoft.games.uglytrivia
 
-import java.util.LinkedList
-
 import scala.collection.mutable
-
 
 class Game(playerNames: String*) {
   private val players: Array[String] = playerNames.toArray
@@ -11,10 +8,11 @@ class Game(playerNames: String*) {
   private var places: Array[Int] = new Array[Int](6)
   private var purses: Array[Int] = new Array[Int](6)
   private val penaltyBox:mutable.Set[Int] = mutable.Set.empty
-  private val popQuestions    :Iterator[String] = Iterator.range(0, 49).map(i => "Pop Question " + i)
-  private val scienceQuestions:Iterator[String] = Iterator.range(0, 49).map(i => "Science Question " + i)
-  private val sportsQuestions :Iterator[String] = Iterator.range(0, 49).map(i => "Sports Question " + i)
-  private val rockQuestions   :Iterator[String] = Iterator.range(0, 49).map(i => "Rock Question " + i)
+  private val questions = {
+    List("Pop", "Science", "Sports", "Rock").map {
+      cat => cat -> Iterator.range(0, 49).map(i => s"$cat Question $i")
+    }.toMap
+  }
   private var currentPlayer: Int = playerIndices.next()
   private var isGettingOutOfPenaltyBox: Boolean = false
 
@@ -58,14 +56,7 @@ class Game(playerNames: String*) {
 
   private def askQuestion(): Unit = {
     println("The category is " + currentCategory)
-    val questions = currentCategory match {
-      case "Pop"     => popQuestions
-      case "Science" => scienceQuestions
-      case "Sports"  => sportsQuestions
-      case "Rock"    => rockQuestions
-    }
-    val question = questions.next()
-    println(question)
+    println(questions(currentCategory).next())
   }
 
   private def currentCategory: String = places(currentPlayer) match {
