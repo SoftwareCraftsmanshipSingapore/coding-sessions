@@ -73,7 +73,7 @@ class Game(playerNames: String*) {
     case 0 | 4 | 8  => "Pop"
     case 1 | 5 | 9  => "Science"
     case 2 | 6 | 10 => "Sports"
-    case _          => "Rock"
+    case 3 | 7 | 11 => "Rock"
   }
 
   def wasCorrectlyAnswered: Boolean = {
