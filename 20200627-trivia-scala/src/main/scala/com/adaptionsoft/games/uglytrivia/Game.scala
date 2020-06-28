@@ -1,10 +1,8 @@
 package com.adaptionsoft.games.uglytrivia
 
-
 class Game(playerNames: String*) {
-  private val players: Array[Player] = playerNames.toArray.map(name => new Player(name, 0))
+  private val players: Array[Player] = playerNames.toArray.map(name => new Player(name))
   private val playerIndices = Iterator.continually(players.indices.iterator).flatten
-  private var purses: Array[Int] = new Array[Int](6)
   private val questions = {
     List("Pop", "Science", "Sports", "Rock").map {
       cat => cat -> Iterator.range(0, 49).map(i => s"$cat Question $i")
@@ -19,10 +17,8 @@ class Game(playerNames: String*) {
   private def addPlayers(): Unit = {
     playerNames.zipWithIndex.foreach{
       case (p, i) =>
-        val playerIndex = i + 1
-        purses(playerIndex) = 0
         println(p + " was added")
-        println("They are player number " + playerIndex)
+        println(s"They are player number ${i + 1}")
     }
   }
 
@@ -76,7 +72,7 @@ class Game(playerNames: String*) {
   def wrongAnswer: Boolean = {
     println("Question was incorrectly answered")
     println(player.name + " was sent to the penalty box")
-    player.inPenaltyBox = true
+    player.gotoPenaltyBox()
     advancePlayer()
     true
   }
@@ -84,24 +80,31 @@ class Game(playerNames: String*) {
   private def correctlyAnswered(message: String):Boolean = {
     println(message)
     incCurrentPlayerPurse()
-    println(player.name + " now has " + purses(currentPlayer) + " Gold Coins.")
+    println(player.name + " now has " + player.purse + " Gold Coins.")
     val winner: Boolean = didPlayerWin
     advancePlayer()
     winner
   }
-  private def incCurrentPlayerPurse(): Unit = purses(currentPlayer) += 1
+  private def incCurrentPlayerPurse(): Unit = player.addCoin()
   private def advancePlayer(): Unit = {
     currentPlayer = playerIndices.next()
     player = players(currentPlayer)
   }
-  private def didPlayerWin: Boolean = !(purses(currentPlayer) == 6)
+  private def didPlayerWin: Boolean = !(player.purse == 6)
 }
 
-class Player(val name: String, val purse: Int, var inPenaltyBox: Boolean = false) {
+class Player(val name: String) {
+  private var _purse: Int = 0
   private var _place: Int = 0
+  private var _inPenaltyBox:Boolean = false
+
   def move(count: Int): Unit = {
     _place += count
     if (_place > 11) _place -= 12
   }
   def place: Int = _place
+  def inPenaltyBox: Boolean = _inPenaltyBox
+  def gotoPenaltyBox():Unit = _inPenaltyBox = true
+  def purse:Int = _purse
+  def addCoin():Unit = _purse += 1
 }
