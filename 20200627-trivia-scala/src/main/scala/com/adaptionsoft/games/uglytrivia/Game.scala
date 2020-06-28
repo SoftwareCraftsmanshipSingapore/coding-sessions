@@ -3,14 +3,16 @@ package com.adaptionsoft.games.uglytrivia
 import scala.collection.mutable
 
 class Game(playerNames: String*) {
-  private val players: Array[Player] = playerNames.toArray.map(name => new Player(name))
-  private val playerIndices = Iterator.continually(players.indices.iterator).flatten
+  private val players = {
+    val ps = playerNames.map(new Player(_))
+    Iterator.continually(ps.iterator).flatten.buffered
+  }
   private val questions = {
     List("Pop", "Science", "Sports", "Rock").map {
       cat => cat -> Iterator.range(0, 49).map(i => s"$cat Question $i")
     }.toMap
   }
-  private var player: Player = players(playerIndices.next())
+  private def player: Player = players.head
   private var isGettingOutOfPenaltyBox: Boolean = false
 
   private val _log:mutable.Buffer[String] = mutable.Buffer.empty
@@ -87,7 +89,7 @@ class Game(playerNames: String*) {
     advancePlayer()
     winner
   }
-  private def advancePlayer(): Unit = player = players(playerIndices.next())
+  private def advancePlayer(): Unit = players.next()
   private def didPlayerWin: Boolean = !(player.purse == 6)
 
   private def addLog(msg: String): Unit = _log += msg
