@@ -59,8 +59,8 @@ class Game(playerNames: String*) {
   }
 
   private def currentCategory: String = places(currentPlayer) match {
-    case 0 | 4 | 8  => "Pop"
-    case 1 | 5 | 9  => "Science"
+    case 0 | 4 |  8 => "Pop"
+    case 1 | 5 |  9 => "Science"
     case 2 | 6 | 10 => "Sports"
     case 3 | 7 | 11 => "Rock"
   }
