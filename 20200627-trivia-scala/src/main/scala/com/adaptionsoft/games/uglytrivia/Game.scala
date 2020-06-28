@@ -10,21 +10,19 @@ class Game(playerNames: String*) {
       cat => cat -> Iterator.range(0, 49).map(i => s"$cat Question $i")
     }.toMap
   }
-  private var player: Player = players.head
-  private var currentPlayer: Int = playerIndices.next()
+  private var player: Player = players(playerIndices.next())
   private var isGettingOutOfPenaltyBox: Boolean = false
 
   private val _log:mutable.Buffer[String] = mutable.Buffer.empty
 
   addPlayers()
 
-  private def addPlayers(): Unit = {
+  private def addPlayers(): Unit =
     playerNames.zipWithIndex.foreach{
       case (p, i) =>
         addLog(p + " was added")
         addLog(s"They are player number ${i + 1}")
     }
-  }
 
   def roll(roll: Int): Unit = {
     addLog(player.name + " is the current player")
@@ -83,17 +81,13 @@ class Game(playerNames: String*) {
 
   private def correctlyAnswered(message: String):Boolean = {
     addLog(message)
-    incCurrentPlayerPurse()
+    player.addCoin()
     addLog(player.name + " now has " + player.purse + " Gold Coins.")
     val winner: Boolean = didPlayerWin
     advancePlayer()
     winner
   }
-  private def incCurrentPlayerPurse(): Unit = player.addCoin()
-  private def advancePlayer(): Unit = {
-    currentPlayer = playerIndices.next()
-    player = players(currentPlayer)
-  }
+  private def advancePlayer(): Unit = player = players(playerIndices.next())
   private def didPlayerWin: Boolean = !(player.purse == 6)
 
   private def addLog(msg: String): Unit = _log += msg
