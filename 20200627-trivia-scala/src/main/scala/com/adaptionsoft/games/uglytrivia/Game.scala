@@ -1,5 +1,7 @@
 package com.adaptionsoft.games.uglytrivia
 
+import scala.collection.mutable
+
 class Game(playerNames: String*) {
   private val players: Array[Player] = playerNames.toArray.map(name => new Player(name))
   private val playerIndices = Iterator.continually(players.indices.iterator).flatten
@@ -12,27 +14,29 @@ class Game(playerNames: String*) {
   private var currentPlayer: Int = playerIndices.next()
   private var isGettingOutOfPenaltyBox: Boolean = false
 
+  private val _log:mutable.Buffer[String] = mutable.Buffer.empty
+
   addPlayers()
 
   private def addPlayers(): Unit = {
     playerNames.zipWithIndex.foreach{
       case (p, i) =>
-        println(p + " was added")
-        println(s"They are player number ${i + 1}")
+        addLog(p + " was added")
+        addLog(s"They are player number ${i + 1}")
     }
   }
 
   def roll(roll: Int): Unit = {
-    println(player.name + " is the current player")
-    println("They have rolled a " + roll)
+    addLog(player.name + " is the current player")
+    addLog("They have rolled a " + roll)
     if (player.inPenaltyBox) {
       if (roll % 2 != 0) {
         isGettingOutOfPenaltyBox = true
-        println(player.name + " is getting out of the penalty box")
+        addLog(player.name + " is getting out of the penalty box")
         outOfPenaltyBoxRoll(roll)
       }
       else {
-        println(player.name + " is not getting out of the penalty box")
+        addLog(player.name + " is not getting out of the penalty box")
         isGettingOutOfPenaltyBox = false
       }
     }
@@ -41,13 +45,13 @@ class Game(playerNames: String*) {
 
   private def outOfPenaltyBoxRoll(places: Int): Unit = {
     player.move(places)
-    println(player.name + "'s new location is " + player.place)
+    addLog(player.name + "'s new location is " + player.place)
     askQuestion()
   }
 
   private def askQuestion(): Unit = {
-    println("The category is " + currentCategory)
-    println(questions(currentCategory).next())
+    addLog("The category is " + currentCategory)
+    addLog(questions(currentCategory).next())
   }
 
   private def currentCategory: String = player.place match {
@@ -70,17 +74,17 @@ class Game(playerNames: String*) {
   }
 
   def wrongAnswer: Boolean = {
-    println("Question was incorrectly answered")
-    println(player.name + " was sent to the penalty box")
+    addLog("Question was incorrectly answered")
+    addLog(player.name + " was sent to the penalty box")
     player.gotoPenaltyBox()
     advancePlayer()
     true
   }
 
   private def correctlyAnswered(message: String):Boolean = {
-    println(message)
+    addLog(message)
     incCurrentPlayerPurse()
-    println(player.name + " now has " + player.purse + " Gold Coins.")
+    addLog(player.name + " now has " + player.purse + " Gold Coins.")
     val winner: Boolean = didPlayerWin
     advancePlayer()
     winner
@@ -91,6 +95,9 @@ class Game(playerNames: String*) {
     player = players(currentPlayer)
   }
   private def didPlayerWin: Boolean = !(player.purse == 6)
+
+  private def addLog(msg: String): Unit = _log += msg
+  def log: List[String] = _log.toList
 }
 
 class Player(val name: String) {
@@ -107,4 +114,6 @@ class Player(val name: String) {
   def gotoPenaltyBox():Unit = _inPenaltyBox = true
   def purse:Int = _purse
   def addCoin():Unit = _purse += 1
+
+  def reportCoins: String = s"$name now has $purse Gold Coins."
 }

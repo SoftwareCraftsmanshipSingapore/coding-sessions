@@ -8,24 +8,21 @@ object GameRunner {
 
     var rolls = List.empty[Int]
     var stops = List.empty[Int]
-    val baos = new java.io.ByteArrayOutputStream
-    Console.withOut(new java.io.PrintStream(baos)) {
-      val aGame = new Game("Chet", "Pat", "Sue")
-      do {
-        val rollValue = rollValues.next()
-        rolls = rolls ::: List(rollValue)
-        aGame.roll(rollValue)              //1 ... 5
-        val stopValue = stopValues.next()
-        stops = stops ::: List(stopValue)
-        if (stopValue == 7) {      //0 ... 8
-          aAWinner = aGame.wrongAnswer
-        }
-        else {
-          aAWinner = aGame.wasCorrectlyAnswered
-        }
-      } while (aAWinner)
-    }
-    Result(rolls, stops, baos.toString())
+    val aGame = new Game("Chet", "Pat", "Sue")
+    do {
+      val rollValue = rollValues.next()
+      rolls = rolls ::: List(rollValue)
+      aGame.roll(rollValue)              //1 ... 5
+      val stopValue = stopValues.next()
+      stops = stops ::: List(stopValue)
+      if (stopValue == 7) {      //0 ... 8
+        aAWinner = aGame.wrongAnswer
+      }
+      else {
+        aAWinner = aGame.wasCorrectlyAnswered
+      }
+    } while (aAWinner)
+    Result(rolls, stops, aGame.log.mkString("\n"))
   }
 }
 
