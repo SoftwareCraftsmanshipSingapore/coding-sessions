@@ -63,7 +63,7 @@ class Game(playerNames: String*) {
 
   def wasCorrectlyAnswered: Boolean = {
     if (player.inPenaltyBox) {
-      if (isGettingOutOfPenaltyBox)
+      if (isGettingOutOfPenaltyBox) //FIXME: never gets out of the penalty box - BUG?
         correctlyAnswered("Answer was correct!!!!")
       else {
         advancePlayer()
@@ -101,6 +101,7 @@ class Player(val name: String) {
   private var _place: Int = 0
   private var _inPenaltyBox:Boolean = false
 
+  //FIXME: these advancements will loose places - BUG
   def move(count: Int): Unit = {
     _place += count
     if (_place > 11) _place -= 12
