@@ -10,8 +10,8 @@ object GameRunner {
     var stops = List.empty[Int]
     val baos = new java.io.ByteArrayOutputStream
     Console.withOut(new java.io.PrintStream(baos)) {
-      val aGame = new Game()
-      List("Chet", "Pat", "Sue").foreach(aGame.add)
+      val aGame = new Game("Chet", "Pat", "Sue")
+//      List("Chet", "Pat", "Sue").foreach(aGame.add)
       do {
         val rollValue = rollValues.next()
         rolls = rolls ::: List(rollValue)
