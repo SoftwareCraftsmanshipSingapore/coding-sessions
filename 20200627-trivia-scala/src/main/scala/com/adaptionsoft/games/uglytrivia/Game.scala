@@ -77,27 +77,14 @@ class Game(playerNames: String*) {
 
   def wasCorrectlyAnswered: Boolean = {
     if (penaltyBox(currentPlayer)) {
-      if (isGettingOutOfPenaltyBox) {
-        println("Answer was correct!!!!")
-        incCurrentPlayerPurse()
-        println(players(currentPlayer) + " now has " + purses(currentPlayer) + " Gold Coins.")
-        var winner: Boolean = didPlayerWin
-        advancePlayer()
-        winner
-      }
+      if (isGettingOutOfPenaltyBox)
+        correctlyAnswered("Answer was correct!!!!")
       else {
         advancePlayer()
         true
       }
     }
-    else {
-      println("Answer was corrent!!!!")
-      incCurrentPlayerPurse()
-      println(players(currentPlayer) + " now has " + purses(currentPlayer) + " Gold Coins.")
-      var winner: Boolean = didPlayerWin
-      advancePlayer()
-      winner
-    }
+    else correctlyAnswered("Answer was corrent!!!!")
   }
 
   def wrongAnswer: Boolean = {
@@ -108,6 +95,14 @@ class Game(playerNames: String*) {
     true
   }
 
+  private def correctlyAnswered(message: String):Boolean = {
+    println(message)
+    incCurrentPlayerPurse()
+    println(players(currentPlayer) + " now has " + purses(currentPlayer) + " Gold Coins.")
+    val winner: Boolean = didPlayerWin
+    advancePlayer()
+    winner
+  }
   private def incCurrentPlayerPurse(): Unit = purses(currentPlayer) += 1
   private def advancePlayer(): Unit = currentPlayer = playerIndices.next()
   private def didPlayerWin: Boolean = !(purses(currentPlayer) == 6)
