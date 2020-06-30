@@ -3,24 +3,16 @@ package com.adaptionsoft.games.uglytrivia
 import scala.collection.mutable
 
 class Game(playerNames: String*) {
+  private val _log = mutable.Buffer.empty[String]
+  private val questions = new Questions(addLog)
   private val players = {
-    val ps = playerNames.map(new Player(_))
+    val ps = playerNames.zipWithIndex.map {
+      case (n, i) => new Player(i + 1, n)(addLog)
+    }
     Iterator.continually(ps.iterator).flatten.buffered
   }
-  private val questions = new Questions(addLog)
   private def player: Player = players.head
   private var isGettingOutOfPenaltyBox: Boolean = false
-
-  private val _log:mutable.Buffer[String] = mutable.Buffer.empty
-
-  addPlayers()
-
-  private def addPlayers(): Unit =
-    playerNames.zipWithIndex.foreach{
-      case (p, i) =>
-        addLog(p + " was added")
-        addLog(s"They are player number ${i + 1}")
-    }
 
   def roll(roll: Int): Unit = {
     addLog(player.name + " is the current player")
@@ -80,7 +72,10 @@ class Game(playerNames: String*) {
   def log: List[String] = _log.toList
 }
 
-class Player(val name: String) {
+class Player(id: Int, val name: String)(addLog: String => Unit) {
+  addLog(s"$name was added")
+  addLog(s"They are player number $id")
+
   private var _purse: Int = 0
   private var _place: Int = 0
   private var _inPenaltyBox:Boolean = false
