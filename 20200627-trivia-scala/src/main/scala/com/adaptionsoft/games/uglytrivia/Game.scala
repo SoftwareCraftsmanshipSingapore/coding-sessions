@@ -50,7 +50,6 @@ class Game(playerNames: String*) {
 
   def wrongAnswer: Boolean = {
     addLog("Question was incorrectly answered")
-    addLog(player.name + " was sent to the penalty box")
     player.gotoPenaltyBox()
     advancePlayer()
     true
@@ -87,7 +86,10 @@ class Player(id: Int, val name: String)(addLog: String => Unit) {
   }
   def place: Int = _place
   def inPenaltyBox: Boolean = _inPenaltyBox
-  def gotoPenaltyBox():Unit = _inPenaltyBox = true
+  def gotoPenaltyBox():Unit = {
+    _inPenaltyBox = true
+    addLog(s"$name was sent to the penalty box")
+  }
   def purse:Int = _purse
   def addCoin():Unit = _purse += 1
 
