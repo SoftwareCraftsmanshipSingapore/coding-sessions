@@ -21,6 +21,7 @@ class GameRunnerTest extends AnyFlatSpecLike with Matchers with OneInstancePerTe
         case rolls::stops::output =>
           def asInts(s: String) = s.split(',').map(_.toInt).toList
           Result(asInts(rolls), asInts(stops), output.mkString(nl))
+        case badMatch => fail(s"bad match: $badMatch")
       }.foreach {
        r =>
         GameRunner.run(r.rolls.iterator, r.stops.iterator).out.trim shouldBe r.out

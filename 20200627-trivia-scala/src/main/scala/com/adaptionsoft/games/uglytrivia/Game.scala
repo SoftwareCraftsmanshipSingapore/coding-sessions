@@ -7,11 +7,7 @@ class Game(playerNames: String*) {
     val ps = playerNames.map(new Player(_))
     Iterator.continually(ps.iterator).flatten.buffered
   }
-  private val questions = {
-    List("Pop", "Science", "Sports", "Rock").map {
-      cat => cat -> Iterator.range(0, 49).map(i => s"$cat Question $i")
-    }.toMap
-  }
+  private val questions = new Questions(addLog)
   private def player: Player = players.head
   private var isGettingOutOfPenaltyBox: Boolean = false
 
@@ -46,19 +42,7 @@ class Game(playerNames: String*) {
   private def outOfPenaltyBoxRoll(places: Int): Unit = {
     player.move(places)
     addLog(player.name + "'s new location is " + player.place)
-    askQuestion()
-  }
-
-  private def askQuestion(): Unit = {
-    addLog("The category is " + currentCategory)
-    addLog(questions(currentCategory).next())
-  }
-
-  private def currentCategory: String = player.place match {
-    case 0 | 4 |  8 => "Pop"
-    case 1 | 5 |  9 => "Science"
-    case 2 | 6 | 10 => "Sports"
-    case 3 | 7 | 11 => "Rock"
+    questions.askQuestion(player)
   }
 
   def wasCorrectlyAnswered: Boolean = {
@@ -113,4 +97,25 @@ class Player(val name: String) {
   def addCoin():Unit = _purse += 1
 
   def reportCoins: String = s"$name now has $purse Gold Coins."
+}
+
+class Questions(addLog: String => Unit) {
+  private val questions = {
+    List("Pop", "Science", "Sports", "Rock").map {
+      cat => cat -> Iterator.range(0, 49).map(i => s"$cat Question $i")
+    }.toMap
+  }
+
+  def askQuestion(player:Player): Unit = {
+    val category = currentCategory(player.place)
+    addLog(s"The category is $category")
+    addLog(questions(category).next())
+  }
+
+  private def currentCategory(place: Int): String = place match {
+    case 0 | 4 |  8 => "Pop"
+    case 1 | 5 |  9 => "Science"
+    case 2 | 6 | 10 => "Sports"
+    case 3 | 7 | 11 => "Rock"
+  }
 }
