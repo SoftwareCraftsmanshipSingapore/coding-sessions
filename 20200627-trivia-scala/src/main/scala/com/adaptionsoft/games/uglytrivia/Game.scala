@@ -21,19 +21,18 @@ class Game(playerNames: String*) {
       if (roll % 2 != 0) {
         isGettingOutOfPenaltyBox = true
         addLog(player.name + " is getting out of the penalty box")
-        outOfPenaltyBoxRoll(roll)
+        moveAndAskQuestion(roll)
       }
       else {
         addLog(player.name + " is not getting out of the penalty box")
         isGettingOutOfPenaltyBox = false
       }
     }
-    else outOfPenaltyBoxRoll(roll)
+    else moveAndAskQuestion(roll)
   }
 
-  private def outOfPenaltyBoxRoll(places: Int): Unit = {
+  private def moveAndAskQuestion(places: Int): Unit = {
     player.move(places)
-    addLog(player.name + "'s new location is " + player.place)
     questions.askQuestion(player)
   }
 
@@ -84,6 +83,7 @@ class Player(id: Int, val name: String)(addLog: String => Unit) {
   def move(count: Int): Unit = {
     _place += count
     if (_place > 11) _place -= 12
+    addLog(s"$name's new location is $place")
   }
   def place: Int = _place
   def inPenaltyBox: Boolean = _inPenaltyBox
