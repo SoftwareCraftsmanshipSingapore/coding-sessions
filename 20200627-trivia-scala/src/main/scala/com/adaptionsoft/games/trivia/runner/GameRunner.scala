@@ -4,17 +4,13 @@ import com.adaptionsoft.games.uglytrivia.Game
 
 object GameRunner {
   def run(dice: Iterator[Int], answers: Iterator[Int]): Result = {
-    var aAWinner = false
 
-    var rolls = List.empty[Int]
-    var stops = List.empty[Int]
+    val rolls = List.empty[Int]
+    val stops = List.empty[Int]
     val aGame = new Game(dice, answers, "Chet", "Pat", "Sue")
     do {
-      rolls = rolls ::: List(aGame.roll())
-      val stopValue = answers.next()
-      stops = stops ::: List(stopValue)
-      aAWinner = aGame.answer(stopValue != 7)
-    } while (aAWinner)
+      aGame.play()
+    } while (aGame.assessAnswer())
     Result(rolls, stops, aGame.log.mkString("\n"))
   }
 }

@@ -4,18 +4,27 @@ import scala.collection.mutable
 
 class Game(dice: Iterator[Int], answers: Iterator[Int], playerNames: String*) {
   private val _log = mutable.Buffer.empty[String]
-  private val questions = new Questions(addLog, answers)
+  private val questions = new Questions(addLog)
   private val players = {
     val ps = playerNames.zipWithIndex.map {
-      case (n, i) => new Player(i + 1, n, questions)(addLog)
+      case (n, i) => new Player(i + 1, n, answers)(addLog)
     }
     Iterator.continually(ps.iterator).flatten.buffered
   }
   private def player: Player = players.head
 
-  def roll(): Int = player.takeTurn(dice.next())
+  def play(): Int = {
+    val rolledNumber = dice.next()
+    player.takeTurn(rolledNumber).foreach(questions.pickQuestion) //FIXME: should remember the question
+    rolledNumber
+  }
 
-  def answer(correct: Boolean): Boolean = if (correct) wasCorrectlyAnswered else wrongAnswer
+  def assessAnswer(): Boolean = {
+    //FIXME: should be asking the question if it was answered correctly
+    if (player.answer() == 7) {
+      wrongAnswer
+    } else wasCorrectlyAnswered
+  }
 
   private def wasCorrectlyAnswered: Boolean = {
     if (player.inPenaltyBox) {

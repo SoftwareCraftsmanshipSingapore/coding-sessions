@@ -1,6 +1,6 @@
 package com.adaptionsoft.games.uglytrivia
 
-class Player(id: Int, val name: String, questions: Questions)(addLog: String => Unit) {
+class Player(id: Int, val name: String, answers: Iterator[Int])(addLog: String => Unit) {
   addLog(s"$name was added")
   addLog(s"They are player number $id")
 
@@ -24,32 +24,29 @@ class Player(id: Int, val name: String, questions: Questions)(addLog: String => 
 
   def isGettingOutOfPenaltyBox: Boolean = _isGettingOutOfPenaltyBox
 
-  def takeTurn(rolledNumber: Int): Int = {
+  def takeTurn(rolledNumber: Int): Option[Int] = {
     addLog(name + " is the current player")
     addLog("They have rolled a " + rolledNumber)
     if (inPenaltyBox) {
       if (rolledNumber % 2 != 0) {
         _isGettingOutOfPenaltyBox = true
         addLog(name + " is getting out of the penalty box")
-        moveAndAskQuestion(rolledNumber)
+        Option(move(rolledNumber))
       }
       else {
         addLog(name + " is not getting out of the penalty box")
         _isGettingOutOfPenaltyBox = false
+        None
       }
     }
-    else moveAndAskQuestion(rolledNumber)
-
-    rolledNumber
+    else Option(move(rolledNumber))
   }
 
-  private def moveAndAskQuestion(places: Int): Unit = {
-    move(places)
-    questions.pickQuestion(place)
-  }
+  def answer(): Int = answers.next()
 
-  private def move(count: Int): Unit = {
+  private val move = (count: Int) => {
     _place = + (_place + count) % 12
     addLog(s"$name's new location is $place")
+    _place
   }
 }
