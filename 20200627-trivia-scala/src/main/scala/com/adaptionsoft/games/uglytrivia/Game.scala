@@ -1,60 +1,41 @@
 package com.adaptionsoft.games.uglytrivia
 
+import com.adaptionsoft.games.trivia.runner.{Book, Dice}
+import com.adaptionsoft.games.uglytrivia.Questions.Question
+
 import scala.collection.mutable
 
-class Game(dice: Iterator[Int], answers: Iterator[Int], playerNames: String*) {
+class Game(dice: Dice, book: Book, playerNames: String*) {
   private val _log = mutable.Buffer.empty[String]
   private val questions = new Questions(addLog)
   private val players = {
     val ps = playerNames.zipWithIndex.map {
-      case (n, i) => new Player(i + 1, n, answers)(addLog)
+      case (n, i) => new Player(i + 1, n)(addLog)
     }
-    Iterator.continually(ps.iterator).flatten.buffered
+    Iterator.continually(ps.iterator).flatten
   }
-  private def player: Player = players.head
+  private var player: Player = _
+  advancePlayer()
 
-  def play(): Int = {
-    val rolledNumber = dice.next()
-    player.takeTurn(rolledNumber).foreach(questions.pickQuestion) //FIXME: should remember the question
-    rolledNumber
-  }
+  private var question = Option.empty[Question]
 
-  def assessAnswer(): Boolean = {
-    //FIXME: should be asking the question if it was answered correctly
-    if (player.answer() == 7) {
-      wrongAnswer
-    } else wasCorrectlyAnswered
-  }
+  def play(): Unit = question = player.tryToMove(dice.roll()).map(questions.pickQuestion)
 
-  private def wasCorrectlyAnswered: Boolean = {
-    if (player.inPenaltyBox) {
-      if (player.isGettingOutOfPenaltyBox) //FIXME: never gets out of the penalty box - BUG?
-         correctlyAnswered("Answer was correct!!!!")
-      else {
-        advancePlayer()
-        true
-      }
-    }
-    else correctlyAnswered("Answer was corrent!!!!")
+  def keepPlaying(): Boolean = {
+    //FIXME: should be getting answer only if a question was actually asked, if no move no question is asked
+    if (book.answer() == 7)
+      player.wrongAnswer() //FIXME: should not be called if no question was picked
+    else question.foreach(_ => player.wasCorrectlyAnswered())
+    if (player.keepPlaying) {
+      advancePlayer()
+      true
+    } else false
   }
 
-  private def wrongAnswer: Boolean = {
-    addLog("Question was incorrectly answered")
-    player.gotoPenaltyBox()
-    advancePlayer()
-    true
+  private def advancePlayer(): Unit = {
+    player = players.next()
+    addLog(s"${player.name} is the current player")
   }
-
-  private def correctlyAnswered(message: String):Boolean = {
-    addLog(message)
-    player.addCoin()
-    addLog(player.name + " now has " + player.purse + " Gold Coins.")
-    val winner: Boolean = didPlayerWin
-    advancePlayer()
-    winner
-  }
-  private def advancePlayer(): Unit = players.next()
-  private def didPlayerWin: Boolean = !player.hasWon
 
   private def addLog(msg: String): Unit = _log += msg
   def log: List[String] = _log.toList

@@ -3,6 +3,7 @@ package trivia
 import java.nio.file.{Files, Paths}
 
 import com.adaptionsoft.games.trivia.runner.{GameRunner, Result}
+import com.adaptionsoft.games.uglytrivia.{Book, Dice}
 import org.scalatest.OneInstancePerTest
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
@@ -24,7 +25,7 @@ class GameRunnerTest extends AnyFlatSpecLike with Matchers with OneInstancePerTe
         case badMatch => fail(s"bad match: $badMatch")
       }.foreach {
        r =>
-        GameRunner.run(r.rolls.iterator, r.stops.iterator).out.trim shouldBe r.out
+        GameRunner.run(new Dice(r.rolls.iterator), new Book(r.stops.iterator)).out.trim shouldBe r.out
     }
   }
 
@@ -33,12 +34,12 @@ class GameRunnerTest extends AnyFlatSpecLike with Matchers with OneInstancePerTe
       val it = List(1, 2, 3, 4, 5)
       Iterator.continually(scala.util.Random.shuffle(it)).flatten
     }
-    def stopValues: Iterator[Int] = {
+    def answers: Iterator[Int] = {
       val it = List(0, 1, 2, 3, 4, 5, 6, 7, 8)
       Iterator.continually(scala.util.Random.shuffle(it)).flatten
     }
     val results = Iterator
-      .continually(GameRunner.run(rollValues, stopValues))
+      .continually(GameRunner.run(new Dice(rollValues), new Book(answers)))
       .take(100)
       .distinctBy(r => r.rolls -> r.stops)
       .toList

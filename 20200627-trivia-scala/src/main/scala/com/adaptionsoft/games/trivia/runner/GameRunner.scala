@@ -3,15 +3,12 @@ package com.adaptionsoft.games.trivia.runner
 import com.adaptionsoft.games.uglytrivia.Game
 
 object GameRunner {
-  def run(dice: Iterator[Int], answers: Iterator[Int]): Result = {
-
-    val rolls = List.empty[Int]
-    val stops = List.empty[Int]
-    val aGame = new Game(dice, answers, "Chet", "Pat", "Sue")
+  def run(dice: Dice, book: Book): Result = {
+    val aGame = new Game(dice, book, "Chet", "Pat", "Sue")
     do {
       aGame.play()
-    } while (aGame.assessAnswer())
-    Result(rolls, stops, aGame.log.mkString("\n"))
+    } while (aGame.keepPlaying())
+    Result(dice.rolls, book.answers, aGame.log.mkString("\n"))
   }
 }
 
@@ -20,4 +17,22 @@ case class Result(rolls: List[Int], stops: List[Int], out: String) {
     s"""${rolls.mkString(",")}
       |${stops.mkString(",")}
       |$out""".stripMargin
+}
+
+abstract class Input(is: Iterator[Int]) {
+  protected var _is = List.empty[Int]
+  protected def next(): Int = {
+    val n = is.next()
+    _is :+= n
+    n
+  }
+}
+class Dice(dice: Iterator[Int]) extends Input(dice) {
+  def rolls: List[Int] = _is
+  def roll(): Int = next()
+}
+
+class Book(cheatSheet: Iterator[Int]) extends Input(cheatSheet) {
+  def answers: List[Int] = _is
+  def answer(): Int = next()
 }

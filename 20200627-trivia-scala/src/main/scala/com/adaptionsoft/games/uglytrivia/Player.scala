@@ -1,52 +1,46 @@
 package com.adaptionsoft.games.uglytrivia
 
-class Player(id: Int, val name: String, answers: Iterator[Int])(addLog: String => Unit) {
+class Player(id: Int, val name: String)(addLog: String => Unit) {
   addLog(s"$name was added")
   addLog(s"They are player number $id")
 
-  private var _purse: Int = 0
-  private var _place: Int = 0
-  private var _inPenaltyBox:Boolean = false
-  private var _isGettingOutOfPenaltyBox: Boolean = false
+  private var purse: Int = 0
+  private var place: Int = 0
+  private var inPenaltyBox:Boolean = false
 
-  def place: Int = _place
-  def inPenaltyBox: Boolean = _inPenaltyBox
-  def gotoPenaltyBox():Unit = {
-    _inPenaltyBox = true
+  def tryToMove(rolledNumber: Int): Option[Int] = {
+    var isGettingOutOfPenaltyBox: Boolean = false
+    addLog(s"They have rolled a $rolledNumber")
+    if (inPenaltyBox) {
+      isGettingOutOfPenaltyBox = rolledNumber % 2 != 0
+      val not = if (isGettingOutOfPenaltyBox) "" else "not "
+      addLog(s"$name is ${not}getting out of the penalty box")
+    }
+    tryToMoveIf(isGettingOutOfPenaltyBox || !inPenaltyBox)(rolledNumber)
+  }
+
+  //FIXME: never gets out of the penalty box - BUG?
+  def wasCorrectlyAnswered(): Unit = {
+    addLog("Answer was correct!!!!")
+    purse += 1
+    addLog(s"$name now has $purse Gold Coins.")
+  }
+
+  def wrongAnswer(): Unit = {
+    addLog("Question was incorrectly answered")
+    inPenaltyBox = true
     addLog(s"$name was sent to the penalty box")
   }
-  def purse:Int = _purse
-  def addCoin():Unit = _purse += 1
 
-  def reportCoins: String = s"$name now has $purse Gold Coins."
+  def keepPlaying: Boolean = purse != 6
 
-  def hasWon: Boolean = purse == 6
-
-  def isGettingOutOfPenaltyBox: Boolean = _isGettingOutOfPenaltyBox
-
-  def takeTurn(rolledNumber: Int): Option[Int] = {
-    addLog(name + " is the current player")
-    addLog("They have rolled a " + rolledNumber)
-    if (inPenaltyBox) {
-      if (rolledNumber % 2 != 0) {
-        _isGettingOutOfPenaltyBox = true
-        addLog(name + " is getting out of the penalty box")
-        Option(move(rolledNumber))
+  private def tryToMoveIf(canMove: Boolean)(count: Int) =
+    Option(count)
+      .filter(_ => canMove)
+      .map {
+        c =>
+          place = + (place + c) % 12
+          addLog(s"$name's new location is $place")
+          place
       }
-      else {
-        addLog(name + " is not getting out of the penalty box")
-        _isGettingOutOfPenaltyBox = false
-        None
-      }
-    }
-    else Option(move(rolledNumber))
-  }
-
-  def answer(): Int = answers.next()
-
-  private val move = (count: Int) => {
-    _place = + (_place + count) % 12
-    addLog(s"$name's new location is $place")
-    _place
-  }
 }
