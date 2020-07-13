@@ -4,7 +4,12 @@ import orders.domain.Order.{GrossAmount, OrderItems, Status, Tax}
 
 import scala.math.BigDecimal.RoundingMode
 
-case class Order(status: Status, currency: String, items: OrderItems, total: GrossAmount, totalTax: Tax)
+case class Order(status: Status, currency: String, items: OrderItems, total: GrossAmount, totalTax: Tax) {
+  def approve(): Either[String, Order] = status match {
+    case Order.Status.Created => Right(copy(status = Order.Status.Approved))
+    case invalid              => Left (s"it is already $invalid")
+  }
+}
 
 object Order {
   type OrderItems = Seq[Item]

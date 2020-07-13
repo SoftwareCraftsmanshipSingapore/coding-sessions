@@ -8,8 +8,6 @@ import scala.collection.mutable
 class InMemoryOrderRepository extends OrderRepository {
   private var orderId = 0
   private val orders = mutable.Map.empty[Int, Order]
-  private var _savedOrder:Option[Order] = None
-  def savedOrder: Option[Order] = _savedOrder
 
   override def getById(orderId: Int): Option[Order] = orders.get(orderId)
   def addOrder(order: Order): Int = {
@@ -17,4 +15,6 @@ class InMemoryOrderRepository extends OrderRepository {
     orderId += 1
     orderId
   }
+
+  override def updateOrder(orderId: Int)(order: Order): Unit = orders.update(orderId, order)
 }

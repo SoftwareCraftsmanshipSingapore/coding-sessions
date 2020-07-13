@@ -1,4 +1,4 @@
-package orders.features
+package orders.features.creation
 
 import orders.domain.Order
 import orders.domain.Order.OrderItems

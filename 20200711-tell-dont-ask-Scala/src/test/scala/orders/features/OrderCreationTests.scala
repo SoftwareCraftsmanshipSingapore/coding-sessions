@@ -6,6 +6,7 @@ import orders.domain.Produkt.{Price, TaxPercentage}
 import orders.domain.{Order, Produkt}
 import orders.doubles.InMemoryProductCatalogue
 import orders.features.PurchaseRequest.Item
+import orders.features.creation.{OrderFactory, PurchaseRequest}
 import org.scalatest.{EitherValues, OptionValues}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers

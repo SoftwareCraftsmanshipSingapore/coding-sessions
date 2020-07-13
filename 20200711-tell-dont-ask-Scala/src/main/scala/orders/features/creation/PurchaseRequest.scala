@@ -1,6 +1,4 @@
-package orders.features
-
-import orders.features.PurchaseRequest.Item
+package orders.features.creation
 
 case class PurchaseRequest(currency: String, items: Item*)
 
