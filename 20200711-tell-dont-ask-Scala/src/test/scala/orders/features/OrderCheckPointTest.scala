@@ -2,17 +2,15 @@ package orders.features
 
 import orders.data.TestData
 import orders.domain.Order
-import orders.doubles.InMemoryOrderRepository
 import orders.features.checkpoint.{CheckPointRequest, OrderCheckPoint}
-import org.scalatest.{EitherValues, OptionValues}
+import orders.repository.OrderRepository.OrderId
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
+import org.scalatest.{EitherValues, OptionValues}
 
 class OrderCheckPointTest
   extends AnyFunSuite with Matchers with TestData with EitherValues with TableDrivenPropertyChecks with OptionValues {
-  private val orderRepository = new InMemoryOrderRepository
-  private val orderCheckPoint = new OrderCheckPoint(orderRepository)
 
   private val newOrder = Order(Order.Status.Created, "AUD")(Order.Item(salad, 2))
 
@@ -24,9 +22,9 @@ class OrderCheckPointTest
   }
 
   test("a request to approve a non-existent order should report that the order is missing") {
-    val unknownOrderId = -1
+    val unknownOrderId = OrderId(-1)
     val approvalRequest = CheckPointRequest(unknownOrderId, CheckPointRequest.Decision.Approve)
-    orderCheckPoint.applyDecision(approvalRequest).left.value shouldBe "Order [id=-1] cannot be approved because: not available in repository"
+    orderCheckPoint.applyDecision(approvalRequest).left.value shouldBe s"Order [id=${unknownOrderId}] cannot be approved because: not available in repository"
   }
 
   import Order.Status._

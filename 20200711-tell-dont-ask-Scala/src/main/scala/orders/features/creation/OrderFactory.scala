@@ -3,10 +3,11 @@ package orders.features.creation
 import orders.domain.Order
 import orders.domain.Order.OrderItems
 import orders.features.creation.PurchaseRequest.PurchaseRequestItems
-import orders.repository.ProductCatalogue
+import orders.repository.OrderRepository.OrderId
+import orders.repository.{OrderRepository, ProductCatalogue}
 
-class OrderFactory(productCatalogue: ProductCatalogue) {
-  def make(purchaseRequest: PurchaseRequest): Either[String, Order] = {
+class OrderFactory(productCatalogue: ProductCatalogue, orderRepository: OrderRepository) {
+  def make(purchaseRequest: PurchaseRequest): Either[String, OrderId] = {
     @scala.annotation.tailrec
     def getOrderItems(items: PurchaseRequestItems, orderItems: OrderItems = Nil): Either[String, OrderItems] = items match {
       case Nil => if (orderItems.isEmpty) Left("No items requested") else Right(orderItems)
@@ -16,6 +17,6 @@ class OrderFactory(productCatalogue: ProductCatalogue) {
       }
     }
 
-    getOrderItems(purchaseRequest.items) map Order(Order.Status.Created, purchaseRequest.currency)
+    getOrderItems(purchaseRequest.items) map Order(Order.Status.Created, purchaseRequest.currency) map orderRepository.addOrder
   }
 }
