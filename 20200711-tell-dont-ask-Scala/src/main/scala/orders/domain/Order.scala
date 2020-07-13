@@ -13,7 +13,7 @@ case class Order(status: Status, currency: String, items: OrderItems, total: Gro
 
 object Order {
   type OrderItems = Seq[Item]
-  def apply(status: Status, currency: String)(items: OrderItems): Order = {
+  def apply(status: Status, currency: String)(items: Item*): Order = {
     val totalAmount = items.foldLeft(GrossAmount.ZERO)(_ + _.grossAmount)
     val totalTax = items.foldLeft(Tax.ZERO)(_ + _.tax)
     Order(status, currency, items, totalAmount, totalTax)

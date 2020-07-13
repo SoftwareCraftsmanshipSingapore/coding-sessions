@@ -1,5 +1,7 @@
 package orders.features.creation
 
+import orders.features.creation.PurchaseRequest.Item
+
 case class PurchaseRequest(currency: String, items: Item*)
 
 object PurchaseRequest {

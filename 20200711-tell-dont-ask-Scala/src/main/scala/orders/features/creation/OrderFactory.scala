@@ -2,7 +2,7 @@ package orders.features.creation
 
 import orders.domain.Order
 import orders.domain.Order.OrderItems
-import orders.features.PurchaseRequest.PurchaseRequestItems
+import orders.features.creation.PurchaseRequest.PurchaseRequestItems
 import orders.repository.ProductCatalogue
 
 class OrderFactory(productCatalogue: ProductCatalogue) {
