@@ -1,5 +1,5 @@
 package orders.services
 
 trait ShipmentService {
-  def ship(orderId: Int)
+  def ship(orderId: Int): Unit
 }

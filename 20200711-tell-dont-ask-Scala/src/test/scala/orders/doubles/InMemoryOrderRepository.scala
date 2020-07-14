@@ -17,5 +17,6 @@ class InMemoryOrderRepository extends OrderRepository {
     orderId
   }
 
-  override def updateOrder(orderId: OrderId)(order: Order): Unit = orders.update(orderId, order)
+  override def updateWith(orderId: OrderId)(update: Order => Either[String, Order]): Either[String, Unit] =
+    orders.get(orderId).map(update(_).map(orders.update(orderId, _))).getOrElse(Left("not available in repository"))
 }

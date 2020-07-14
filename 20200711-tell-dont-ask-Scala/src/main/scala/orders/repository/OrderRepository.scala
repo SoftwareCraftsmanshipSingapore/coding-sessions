@@ -6,7 +6,7 @@ import orders.repository.OrderRepository.OrderId
 trait OrderRepository {
   def addOrder(order: Order): OrderId
   def getById(orderId: OrderId): Option[Order]
-  def updateOrder(orderId: OrderId)(order: Order): Unit
+  def updateWith(orderId: OrderId)(update: Order => Either[String, Order]): Either[String, Unit]
 }
 
 object OrderRepository {
