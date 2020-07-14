@@ -9,6 +9,10 @@ case class Order(status: Status, currency: String, items: OrderItems, total: Gro
     case Order.Status.Created => Right(copy(status = Order.Status.Approved))
     case invalid              => Left (s"it is already $invalid")
   }
+  def ship(): Either[String, Order] = status match {
+    case Order.Status.Approved => Right(copy(status = Order.Status.Shipped))
+    case invalid               => Left (s"it is already $invalid")
+  }
 }
 
 object Order {
