@@ -5,13 +5,16 @@ import orders.domain.Order.{GrossAmount, OrderItems, Status, Tax}
 import scala.math.BigDecimal.RoundingMode
 
 case class Order(status: Status, currency: String, items: OrderItems, total: GrossAmount, totalTax: Tax) {
+  import orders.domain.Order.Status._
   def approve(): Either[String, Order] = status match {
-    case Order.Status.Created => Right(copy(status = Order.Status.Approved))
+    case Created => Right(copy(status = Order.Status.Approved))
     case invalid              => Left (s"it is already $invalid")
   }
   def ship(): Either[String, Order] = status match {
-    case Order.Status.Approved => Right(copy(status = Order.Status.Shipped))
-    case invalid               => Left (s"it is already $invalid")
+    case Approved => Right(copy(status = Order.Status.Shipped))
+    case Created  => Left (s"it is not Approved")
+    case Rejected => Left (s"it is has been Rejected")
+    case Shipped  => Left (s"it is has already been Shipped")
   }
 }
 

@@ -4,11 +4,13 @@ import orders.repository.OrderRepository
 import orders.services.ShipmentService
 
 class PostOffice(orderRepository: OrderRepository, shipmentService: ShipmentService) {
-  def ship(shippingRequest: ShippingRequest): Unit = {
+  def ship(shippingRequest: ShippingRequest): Either[String, Unit] = {
     import shippingRequest.orderId
-    orderRepository
-      .updateWith(orderId)(_.ship())
-      .map(_ => shipmentService.ship(orderId))
-      .left.map(e => Left(s"Order [id=$orderId] cannot be shipped because: $e"))
+    val result = for {
+      order        <- orderRepository.getById(orderId)
+      shippedOrder <- order.ship()
+      _            <- shipmentService.ship(orderId)
+    } yield orderRepository.update(orderId)(shippedOrder)
+    result.left.map(e => s"Order [id=$orderId] cannot be shipped because: $e")
   }
 }

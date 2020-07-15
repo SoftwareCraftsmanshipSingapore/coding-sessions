@@ -16,7 +16,7 @@ class OrderCreationTests extends AnyFunSuite with Matchers with EitherValues wit
 
   test("purchase multiple items") {
     val purchaseRequest = PurchaseRequest("EUR", Item("salad", 2), Item("tomato", 3))
-    orderFactory.make(purchaseRequest).toOption.flatMap(orderRepository.getById).value shouldBe Order(Created, "EUR")(
+    orderFactory.make(purchaseRequest).flatMap(orderRepository.getById).toOption.value shouldBe Order(Created, "EUR")(
         Order.Item(salad , Quantity(2), GrossAmount("7.84") , Tax("0.72")),
         Order.Item(tomato, Quantity(3), GrossAmount("15.36"), Tax("1.41"))
       )

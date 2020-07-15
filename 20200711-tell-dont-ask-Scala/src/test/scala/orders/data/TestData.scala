@@ -2,7 +2,7 @@ package orders.data
 
 import orders.domain.Produkt
 import orders.domain.Produkt.{Price, TaxPercentage}
-import orders.doubles.{InMemoryOrderRepository, InMemoryProductCatalogue}
+import orders.doubles.{InMemoryOrderRepository, InMemoryProductCatalogue, TestShipmentService}
 import orders.features.checkpoint.OrderCheckPoint
 
 trait TestData {
@@ -13,5 +13,6 @@ trait TestData {
 
   protected lazy val orderRepository = new InMemoryOrderRepository
   protected lazy val orderCheckPoint = new OrderCheckPoint(orderRepository)
+  protected lazy val shipmentService = new TestShipmentService
 
 }
