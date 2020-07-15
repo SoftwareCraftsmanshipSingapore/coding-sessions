@@ -4,7 +4,7 @@ import orders.repository.OrderRepository
 import orders.services.ShipmentService
 
 class PostOffice(orderRepository: OrderRepository, shipmentService: ShipmentService) {
-  def ship(shippingRequest: ShippingRequest): Either[String, Unit] = {
+  def process(shippingRequest: ShippingRequest): Either[String, Unit] = {
     import shippingRequest.orderId
     val result = for {
       order        <- orderRepository.getById(orderId)

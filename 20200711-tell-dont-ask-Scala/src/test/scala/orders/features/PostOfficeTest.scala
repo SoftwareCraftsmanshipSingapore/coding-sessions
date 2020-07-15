@@ -16,7 +16,7 @@ class PostOfficeTest
   test("approved order should be shipped") {
     val orderId = orderRepository.addOrder(approvedOrder)
     val shippingRequest = ShippingRequest(orderId)
-    postOffice.ship(shippingRequest).toOption.value shouldBe ()
+    postOffice.process(shippingRequest).toOption.value shouldBe ()
     orderRepository.getById(orderId).toOption.value.status shouldBe Order.Status.Shipped
     shipmentService.isShipped(orderId) shouldBe true
   }
@@ -33,7 +33,7 @@ class PostOfficeTest
         val order = approvedOrder.copy(status = status)
         val orderId = orderRepository.addOrder(order)
         val shippingRequest = ShippingRequest(orderId)
-        postOffice.ship(shippingRequest).left.value shouldBe s"Order [id=$orderId] cannot be shipped because: $reason"
+        postOffice.process(shippingRequest).left.value shouldBe s"Order [id=$orderId] cannot be shipped because: $reason"
         orderRepository.getById(orderId).toOption.value.status shouldBe status
         shipmentService.isShipped(orderId) shouldBe false
       }
