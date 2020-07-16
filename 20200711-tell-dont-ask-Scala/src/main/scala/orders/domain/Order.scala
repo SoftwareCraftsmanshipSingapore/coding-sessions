@@ -26,6 +26,8 @@ object Order {
     Order(status, currency, items, totalAmount, totalTax)
   }
 
+  def mkNew(currency: String)(items: Item*): Order = apply(Order.Status.Created, currency)(items:_*)
+
   case class Item(product: Produkt, quantity: Quantity, grossAmount: GrossAmount, tax: Tax)
   object Item {
     def apply(product: Produkt, quantity: Int): Item = {

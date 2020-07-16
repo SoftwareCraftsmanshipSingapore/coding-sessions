@@ -9,14 +9,15 @@ import orders.repository.{OrderRepository, ProductCatalogue}
 class OrderFactory(productCatalogue: ProductCatalogue, orderRepository: OrderRepository) {
   def make(purchaseRequest: PurchaseRequest): Either[String, OrderId] = {
     @scala.annotation.tailrec
-    def getOrderItems(items: PurchaseRequestItems, orderItems: OrderItems = Nil): Either[String, OrderItems] = items match {
-      case Nil => if (orderItems.isEmpty) Left("No items requested") else Right(orderItems)
-      case i+:is => productCatalogue.getByName(i.productName) match {
-        case Some(product) => getOrderItems(is, orderItems :+ Order.Item(product, i.quantity))
-        case None          => Left(s"""product error: "${i.productName}" not in catalogue""")
+    def getOrderItems(items: PurchaseRequestItems, orderItems: OrderItems = Nil): Either[String, OrderItems] =
+      items match {
+        case Nil     => if (orderItems.isEmpty) Left("No items requested") else Right(orderItems)
+        case i +: is => productCatalogue.getByName(i.productName) match {
+          case Right(product) => getOrderItems(is, orderItems :+ Order.Item(product, i.quantity))
+          case Left(left) => Left(left)
+        }
       }
-    }
-
-    getOrderItems(purchaseRequest.items) map Order(Order.Status.Created, purchaseRequest.currency) map orderRepository.addOrder
+    import purchaseRequest._
+    getOrderItems(items) map Order.mkNew(currency) map orderRepository.addOrder
   }
 }
