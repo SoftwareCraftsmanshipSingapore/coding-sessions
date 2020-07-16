@@ -5,12 +5,12 @@ import com.adaptionsoft.games.uglytrivia.Questions.Question
 
 import scala.collection.mutable
 
-class Game(dice: Dice, book: Book, playerNames: String*) {
-  private val _log = mutable.Buffer.empty[String]
-  private val questions = new Questions(addLog)
+class Game(dice: Dice, book: Book, playerNames: PlayerNames) {
+  private val _log = new Log
+  private val questions = new Questions(_log)
   private val players = {
-    val ps = playerNames.zipWithIndex.map {
-      case (n, i) => new Player(i + 1, n)(addLog)
+    val ps = playerNames.names.zipWithIndex.map {
+      case (n, i) => new Player(i + 1, n)(_log)
     }
     Iterator.continually(ps.iterator).flatten
   }
@@ -34,9 +34,28 @@ class Game(dice: Dice, book: Book, playerNames: String*) {
 
   private def advancePlayer(): Unit = {
     player = players.next()
-    addLog(s"${player.name} is the current player")
+    _log.addLog(s"${player.name} is the current player")
   }
 
-  private def addLog(msg: String): Unit = _log += msg
+  def log: List[String] = _log.log
+}
+
+class Log {
+  private val _log = mutable.Buffer.empty[String]
+  def addLog(msg: String): Unit = _log += msg
   def log: List[String] = _log.toList
+}
+
+class PlayerNames private (val names: Seq[String])
+object PlayerNames {
+  def apply(player1Name: String, player2Name: String): PlayerNames =
+    new PlayerNames(Seq(player1Name, player2Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String): PlayerNames =
+    new PlayerNames(Seq(player1Name, player2Name, player3Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String): PlayerNames =
+    new PlayerNames(Seq(player1Name, player2Name, player3Name, player4Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String): PlayerNames =
+    new PlayerNames(Seq(player1Name, player2Name, player3Name, player4Name, player5Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String, player6Name: String): PlayerNames =
+    new PlayerNames(Seq(player1Name, player2Name, player3Name, player4Name, player5Name, player6Name))
 }

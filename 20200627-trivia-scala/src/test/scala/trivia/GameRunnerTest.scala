@@ -2,8 +2,7 @@ package trivia
 
 import java.nio.file.{Files, Paths}
 
-import com.adaptionsoft.games.trivia.runner.{GameRunner, Result}
-import com.adaptionsoft.games.uglytrivia.{Book, Dice}
+import com.adaptionsoft.games.trivia.runner.{Book, Dice, GameRunner, Result}
 import org.scalatest.OneInstancePerTest
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers

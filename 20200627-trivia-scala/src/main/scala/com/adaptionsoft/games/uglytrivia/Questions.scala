@@ -1,6 +1,6 @@
 package com.adaptionsoft.games.uglytrivia
 
-class Questions(addLog: String => Unit) {
+class Questions(log: Log) {
   import Questions._
   import Category._
   private val questions: Map[Category, Iterator[Question]] = {
@@ -11,9 +11,9 @@ class Questions(addLog: String => Unit) {
 
   def pickQuestion(place: Int): Question = {
     val category = currentCategory(place)
-    addLog(s"The category is $category")
+    log.addLog(s"The category is $category")
     val question = questions(category).next()
-    addLog(s"$question")
+    log.addLog(s"$question")
     question
   }
 
