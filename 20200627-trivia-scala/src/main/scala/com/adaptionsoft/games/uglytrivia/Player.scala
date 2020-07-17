@@ -1,6 +1,6 @@
 package com.adaptionsoft.games.uglytrivia
 
-class Player(id: Int, val name: String)(log: Log) {
+class Player(id: Int, val name: String)(implicit log: Log) {
   log.addLog(s"$name was added")
   log.addLog(s"They are player number $id")
 
@@ -32,7 +32,7 @@ class Player(id: Int, val name: String)(log: Log) {
     log.addLog(s"$name was sent to the penalty box")
   }
 
-  def keepPlaying: Boolean = purse != 6
+  def keepPlaying: Boolean = purse != 6 //FIXME: name???
 
   private def tryToMoveIf(canMove: Boolean)(count: Int) =
     Option(count)
@@ -43,4 +43,44 @@ class Player(id: Int, val name: String)(log: Log) {
           log.addLog(s"$name's new location is $place")
           place
       }
+}
+
+class Players private(val names: Seq[String])(implicit log: Log) {
+  private val players = {
+    val ps = names.zipWithIndex.map {
+      case (n, i) => new Player(i + 1, n)
+    }
+    Iterator.continually(ps.iterator).flatten
+  }
+
+  private var currentPlayer: Player = _
+
+  def advancePlayer(): Unit = {
+    currentPlayer = players.next()
+    log.addLog(s"${currentPlayer.name} is the current player")
+  }
+
+  def tryToMove(rolledNumber: Int): Option[Int] = currentPlayer.tryToMove(rolledNumber)
+
+  def keepPlaying: Boolean = //FIXME: name???
+    if (currentPlayer.keepPlaying) {
+      advancePlayer()
+      true
+    } else false
+
+  def wasCorrectlyAnswered(): Unit = currentPlayer.wasCorrectlyAnswered()
+
+  def wrongAnswer(): Unit = currentPlayer.wrongAnswer()
+}
+object Players {
+  def apply(player1Name: String, player2Name: String)(implicit log: Log): Players =
+    new Players(Seq(player1Name, player2Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String)(implicit log: Log): Players =
+    new Players(Seq(player1Name, player2Name, player3Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String)(implicit log: Log): Players =
+    new Players(Seq(player1Name, player2Name, player3Name, player4Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String)(implicit log: Log): Players =
+    new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name))
+  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String, player6Name: String)(implicit log: Log): Players =
+    new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name, player6Name))
 }

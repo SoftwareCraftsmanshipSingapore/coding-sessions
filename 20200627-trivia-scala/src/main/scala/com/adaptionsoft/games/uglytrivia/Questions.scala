@@ -1,6 +1,6 @@
 package com.adaptionsoft.games.uglytrivia
 
-class Questions(log: Log) {
+class Questions(implicit log: Log) {
   import Questions._
   import Category._
   private val questions: Map[Category, Iterator[Question]] = {
