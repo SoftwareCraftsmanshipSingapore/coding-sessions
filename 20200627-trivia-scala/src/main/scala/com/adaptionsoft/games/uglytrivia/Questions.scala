@@ -5,7 +5,9 @@ class Questions(implicit log: Log) {
   import Category._
   private val questions: Map[Category, Iterator[Question]] = {
     List(Pop, Science, Sports, Rock).map {
-      cat => cat -> Iterator.range(0, 49).map(i => new Question(cat, i))
+      cat =>
+        val it = Iterator.range(0, cat.questionCount - 1).map(i => new Question(cat, i))
+        cat -> Iterator.continually(it).flatten
     }.toMap
   }
 
@@ -26,7 +28,9 @@ class Questions(implicit log: Log) {
 }
 
 object Questions {
-  sealed trait Category
+  sealed trait Category {
+    def questionCount: Int = 50
+  }
   object Category {
     case object Pop     extends Category
     case object Science extends Category
