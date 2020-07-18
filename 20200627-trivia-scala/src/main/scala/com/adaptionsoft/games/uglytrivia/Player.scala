@@ -1,8 +1,8 @@
 package com.adaptionsoft.games.uglytrivia
 
-class Player(id: Int, val name: String)(implicit log: Log) {
-  log.addLog(s"$name was added")
-  log.addLog(s"They are player number $id")
+class Player(id: Int, val name: String, board: Board)(implicit log: Log) {
+  log.add(s"$name was added")
+  log.add(s"They are player number $id")
 
   private var purse: Int = 0
   private var place: Int = 0
@@ -10,45 +10,45 @@ class Player(id: Int, val name: String)(implicit log: Log) {
 
   def tryToMove(rolledNumber: Int): Option[Int] = {
     var isGettingOutOfPenaltyBox: Boolean = false
-    log.addLog(s"They have rolled a $rolledNumber")
+    log.add(s"They have rolled a $rolledNumber")
     if (inPenaltyBox) {
       isGettingOutOfPenaltyBox = rolledNumber % 2 != 0
       val not = if (isGettingOutOfPenaltyBox) "" else "not "
-      log.addLog(s"$name is ${not}getting out of the penalty box")
+      log.add(s"$name is ${not}getting out of the penalty box")
     }
     tryToMoveIf(isGettingOutOfPenaltyBox || !inPenaltyBox)(rolledNumber)
   }
 
   //FIXME: never gets out of the penalty box - BUG?
   def wasCorrectlyAnswered(): Unit = {
-    log.addLog("Answer was correct!!!!")
+    log.add("Answer was correct!!!!")
     purse += 1
-    log.addLog(s"$name now has $purse Gold Coins.")
+    log.add(s"$name now has $purse Gold Coins.")
   }
 
   def wrongAnswer(): Unit = {
-    log.addLog("Question was incorrectly answered")
+    log.add("Question was incorrectly answered")
     inPenaltyBox = true
-    log.addLog(s"$name was sent to the penalty box")
+    log.add(s"$name was sent to the penalty box")
   }
 
   def keepPlaying: Boolean = purse != 6 //FIXME: name???
 
-  private def tryToMoveIf(canMove: Boolean)(count: Int) =
-    Option(count)
+  private def tryToMoveIf(canMove: Boolean)(steps: Int) =
+    Option(steps)
       .filter(_ => canMove)
       .map {
         c =>
-          place = + (place + c) % 12
-          log.addLog(s"$name's new location is $place")
+          place = board.move(place, c)
+          log.add(s"$name's new location is $place")
           place
       }
 }
 
-class Players private(val names: Seq[String])(implicit log: Log) {
+class Players private(names: Seq[String], board: Board)(implicit log: Log) {
   private val players = {
     val ps = names.zipWithIndex.map {
-      case (n, i) => new Player(i + 1, n)
+      case (n, i) => new Player(i + 1, n, board)
     }
     Iterator.continually(ps.iterator).flatten
   }
@@ -57,7 +57,7 @@ class Players private(val names: Seq[String])(implicit log: Log) {
 
   def advancePlayer(): Unit = {
     currentPlayer = players.next()
-    log.addLog(s"${currentPlayer.name} is the current player")
+    log.add(s"${currentPlayer.name} is the current player")
   }
 
   def tryToMove(rolledNumber: Int): Option[Int] = currentPlayer.tryToMove(rolledNumber)
@@ -73,14 +73,17 @@ class Players private(val names: Seq[String])(implicit log: Log) {
   def wrongAnswer(): Unit = currentPlayer.wrongAnswer()
 }
 object Players {
-  def apply(player1Name: String, player2Name: String)(implicit log: Log): Players =
-    new Players(Seq(player1Name, player2Name))
-  def apply(player1Name: String, player2Name: String, player3Name: String)(implicit log: Log): Players =
-    new Players(Seq(player1Name, player2Name, player3Name))
-  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String)(implicit log: Log): Players =
-    new Players(Seq(player1Name, player2Name, player3Name, player4Name))
-  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String)(implicit log: Log): Players =
-    new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name))
-  def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String, player6Name: String)(implicit log: Log): Players =
-    new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name, player6Name))
+  def apply(board: Board)(implicit log: Log): Names = new Names(board)
+  class Names(board: Board)(implicit log: Log) {
+    def apply(player1Name: String, player2Name: String): Players =
+      new Players(Seq(player1Name, player2Name), board)
+    def apply(player1Name: String, player2Name: String, player3Name: String): Players =
+      new Players(Seq(player1Name, player2Name, player3Name), board)
+    def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String): Players =
+      new Players(Seq(player1Name, player2Name, player3Name, player4Name), board)
+    def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String): Players =
+      new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name), board)
+    def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String, player6Name: String): Players =
+      new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name, player6Name), board)
+  }
 }

@@ -1,11 +1,17 @@
 package com.adaptionsoft.games.trivia.runner
 
-import com.adaptionsoft.games.uglytrivia.{Game, Log, Players}
+import com.adaptionsoft.games.uglytrivia.{Board, Game, Log, Players, Questions}
 
 object GameRunner {
   def run(dice: Dice, book: Book): Result = {
     implicit val log: Log = new Log
-    val aGame = new Game(dice, book, Players("Chet", "Pat", "Sue"))
+    val board = new Board(12, Questions.categories)
+    val questions = new Questions(Questions.categories)
+    val players = {
+      val players = Players(board)
+      players("Chet", "Pat", "Sue")
+    }
+    val aGame = new Game(dice, book, board, players, questions)
     do {
       aGame.play()
     } while (aGame.keepPlaying())
