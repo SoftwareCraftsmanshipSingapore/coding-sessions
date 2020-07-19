@@ -1,14 +1,17 @@
 package com.adaptionsoft.games.uglytrivia
 
-class Player(id: Int, val name: String, board: Board)(implicit log: Log) {
+import com.adaptionsoft.games.uglytrivia.Questions.Question
+
+class Player(id: Int, val name: Player.Name, board: Board, questions: Questions)(implicit log: Log) {
+  private var question = Option.empty[Question]
+
   log.add(s"$name was added")
   log.add(s"They are player number $id")
 
   private var purse: Int = 0
-  private var place: Int = 0
   private var inPenaltyBox:Boolean = false
 
-  def tryToMove(rolledNumber: Int): Option[Int] = {
+  def tryToMove(rolledNumber: Int): Unit = {
     var isGettingOutOfPenaltyBox: Boolean = false
     log.add(s"They have rolled a $rolledNumber")
     if (inPenaltyBox) {
@@ -16,14 +19,17 @@ class Player(id: Int, val name: String, board: Board)(implicit log: Log) {
       val not = if (isGettingOutOfPenaltyBox) "" else "not "
       log.add(s"$name is ${not}getting out of the penalty box")
     }
-    tryToMoveIf(isGettingOutOfPenaltyBox || !inPenaltyBox)(rolledNumber)
+    question = tryToMoveIf(isGettingOutOfPenaltyBox || !inPenaltyBox)(rolledNumber)
+      .map(board.getQuestionCategory)
+      .map(questions.pickQuestion)
   }
 
   //FIXME: never gets out of the penalty box - BUG?
-  def wasCorrectlyAnswered(): Unit = {
-    log.add("Answer was correct!!!!")
-    purse += 1
-    log.add(s"$name now has $purse Gold Coins.")
+  def wasCorrectlyAnswered(): Unit = question.foreach {
+    _ =>
+      log.add("Answer was correct!!!!")
+      purse += 1
+      log.add(s"$name now has $purse Gold Coins.")
   }
 
   def wrongAnswer(): Unit = {
@@ -37,21 +43,17 @@ class Player(id: Int, val name: String, board: Board)(implicit log: Log) {
   private def tryToMoveIf(canMove: Boolean)(steps: Int) =
     Option(steps)
       .filter(_ => canMove)
-      .map {
-        c =>
-          place = board.move(place, c)
-          log.add(s"$name's new location is $place")
-          place
-      }
+      .map(board.move(name, _))
+      .map(_ => name)
 }
 
-class Players private(names: Seq[String], board: Board)(implicit log: Log) {
-  private val players = {
-    val ps = names.zipWithIndex.map {
-      case (n, i) => new Player(i + 1, n, board)
-    }
-    Iterator.continually(ps.iterator).flatten
+object Player {
+  case class Name(underlying: String) extends AnyVal {
+    override def toString: String = underlying
   }
+}
+
+class Players private(players: Iterator[Player])(implicit log: Log) {
 
   private var currentPlayer: Player = _
 
@@ -60,7 +62,7 @@ class Players private(names: Seq[String], board: Board)(implicit log: Log) {
     log.add(s"${currentPlayer.name} is the current player")
   }
 
-  def tryToMove(rolledNumber: Int): Option[Int] = currentPlayer.tryToMove(rolledNumber)
+  def move(rolledNumber: Int): Unit = currentPlayer.tryToMove(rolledNumber)
 
   def keepPlaying: Boolean = //FIXME: name???
     if (currentPlayer.keepPlaying) {
@@ -73,17 +75,28 @@ class Players private(names: Seq[String], board: Board)(implicit log: Log) {
   def wrongAnswer(): Unit = currentPlayer.wrongAnswer()
 }
 object Players {
-  def apply(board: Board)(implicit log: Log): Names = new Names(board)
-  class Names(board: Board)(implicit log: Log) {
-    def apply(player1Name: String, player2Name: String): Players =
-      new Players(Seq(player1Name, player2Name), board)
-    def apply(player1Name: String, player2Name: String, player3Name: String): Players =
-      new Players(Seq(player1Name, player2Name, player3Name), board)
-    def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String): Players =
-      new Players(Seq(player1Name, player2Name, player3Name, player4Name), board)
-    def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String): Players =
-      new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name), board)
-    def apply(player1Name: String, player2Name: String, player3Name: String, player4Name: String, player5Name: String, player6Name: String): Players =
-      new Players(Seq(player1Name, player2Name, player3Name, player4Name, player5Name, player6Name), board)
+  def apply(names: Names, board: Board, questions: Questions)(implicit log: Log): Players = {
+    val players: Iterator[Player] = {
+      val ps = names.names.zipWithIndex.map {
+        case (n, i) => new Player(i + 1, n, board, questions)
+      }
+      Iterator.continually(ps.iterator).flatten
+    }
+
+    new Players(players)
+  }
+
+  case class Names(names: Seq[Player.Name])
+  object Names {
+    def apply(player1Name: Player.Name, player2Name: Player.Name): Names =
+      new Names(Seq(player1Name, player2Name))
+    def apply(player1Name: Player.Name, player2Name: Player.Name, player3Name: Player.Name): Names =
+      new Names(Seq(player1Name, player2Name, player3Name))
+    def apply(player1Name: Player.Name, player2Name: Player.Name, player3Name: Player.Name, player4Name: Player.Name): Names =
+      new Names(Seq(player1Name, player2Name, player3Name, player4Name))
+    def apply(player1Name: Player.Name, player2Name: Player.Name, player3Name: Player.Name, player4Name: Player.Name, player5Name: Player.Name): Names =
+      new Names(Seq(player1Name, player2Name, player3Name, player4Name, player5Name))
+    def apply(player1Name: Player.Name, player2Name: Player.Name, player3Name: Player.Name, player4Name: Player.Name, player5Name: Player.Name, player6Name: Player.Name): Names =
+      new Names(Seq(player1Name, player2Name, player3Name, player4Name, player5Name, player6Name))
   }
 }
