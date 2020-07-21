@@ -4,7 +4,11 @@ import com.adaptionsoft.games.trivia.runner.{Book, Dice}
 
 import scala.collection.mutable
 
-class Game(dice: Dice, book: Book, players: Players)(implicit log: Log) {
+class Game(dice: Dice, book: Book, playersNames: Players.Names)(implicit log: Log) {
+  private val questions = new Questions(Questions.categories)
+  private val board = new Board(12, Questions.categories, playersNames)
+  private val players = Players(playersNames, board, questions)
+
   players.advancePlayer()
 
   def play(): Unit = players.move(dice.roll())
@@ -19,7 +23,7 @@ class Game(dice: Dice, book: Book, players: Players)(implicit log: Log) {
 }
 
 class Log {
-  private val _log = mutable.Buffer.empty[String]
-  def add(msg: String): Unit = _log += msg
-  def all: List[String] = _log.toList
+  private val log = mutable.Buffer.empty[String]
+  def add(msg: String): Unit = log += msg
+  def all: List[String] = log.toList
 }
