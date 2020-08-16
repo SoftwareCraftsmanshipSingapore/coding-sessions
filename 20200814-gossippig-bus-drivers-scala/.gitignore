@@ -17,4 +17,4 @@
 .classpath
 
 target/
-project/target/**
+project/target/
