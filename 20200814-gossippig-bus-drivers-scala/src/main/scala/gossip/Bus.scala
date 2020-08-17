@@ -28,7 +28,7 @@ class Transport(buses: Buses) {
   def gossip(): Either[String, Int] = {
     @scala.annotation.tailrec
     def loop(minute: Int = 1): Either[String, Int] = {
-      buses.groupBy(_.move()).values.filter(_.size > 1).foreach(gossip)
+      buses.groupBy(_.move()).values.filter(_.size > 1).foreach(shareGossip)
       if (buses.forall(b => b.gossip.size == busCount))
         Right(minute)
       else
@@ -40,7 +40,7 @@ class Transport(buses: Buses) {
     loop()
   }
 
-  private def gossip(buses:Buses):Unit =
+  private def shareGossip(buses:Buses):Unit =
     (buses ++ buses).sliding(2, 1).foreach {
       case b::bs => bs.foreach(b.addGossip)
     }
