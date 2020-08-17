@@ -1,18 +1,23 @@
 package gossip
 
-import gossip.Bus.Buses
+import gossip.Bus.{Buses, Stop}
 
 import scala.collection.mutable
 
-class Bus (routes: List[Int], val gossip: Gossip) {
-  private val all = Iterator.continually(routes.iterator).flatten//.buffered
-  def move(): Int = all.next()
-  def addGossip(bus: Bus): Unit = gossip.add(bus.gossip.gossip)
+class Bus (val gossip: Gossip, routes: Seq[Stop]) {
+  private val all = Iterator.continually(routes.iterator).flatten
+  def move(): Stop = all.next()
+  def addGossip(bus: Bus): Unit = gossip.add(bus.gossip)
+}
+object Bus {
+  type Stop = Char
+  type Buses = List[Bus]
+  def apply(gossip: Gossip, routes: String): Bus = new Bus(gossip, routes)
 }
 
-class Gossip(val gossip: mutable.Set[String]) {
-  def add(gossip: mutable.Set[String]): Unit = this.gossip ++ gossip
-  def size: Int = gossip.size
+class Gossip(private[Gossip] val underlying: mutable.Set[String]) {
+  def add(gossip: Gossip): Unit = underlying.addAll(gossip.underlying)
+  def size: Int = underlying.size
 }
 object Gossip {
   def apply(gossip: String) = new Gossip(mutable.Set(gossip))
@@ -23,27 +28,24 @@ class Transport(buses: Buses) {
   def gossip(): Either[String, Int] = {
     @scala.annotation.tailrec
     def loop(minute: Int = 1): Either[String, Int] = {
-      buses.groupBy(_.move()).values.foreach(gossip)
+      buses.groupBy(_.move()).values.filter(_.size > 1).foreach(gossip)
       if (buses.forall(b => b.gossip.size == busCount))
         Right(minute)
-      else {
+      else
         if (minute == 480)
           Left("never")
         else
           loop(minute + 1)
-      }
     }
     loop()
   }
 
-  private def gossip(buses:Buses):Unit = {
-    for {
-      b1 <- buses
-      b2 <- buses
-    } b1.addGossip(b2)
-  }
+  private def gossip(buses:Buses):Unit =
+    (buses ++ buses).sliding(2, 1).foreach {
+      case b::bs => bs.foreach(b.addGossip)
+    }
 }
 
-object Bus {
-  type Buses = List[Bus]
+object Transport {
+  def apply(buses: Buses): Transport = new Transport(buses)
 }
