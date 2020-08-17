@@ -47,5 +47,5 @@ class Transport(buses: Buses) {
 }
 
 object Transport {
-  def apply(buses: Buses): Transport = new Transport(buses)
+  def apply(buses: Bus*): Transport = new Transport(buses.toList)
 }
